@@ -16,5 +16,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // This source page only runs under the Vite dev server. When it is served
+      // as a static file (e.g. GitHub Pages publishing the repository root),
+      // send the visitor to the production build in docs/.
+      if (!document.querySelector('script[src*="@vite/client"]') && document.querySelector('script[src$="src/main.tsx"]')) {
+        location.replace("docs/" + location.hash);
+      }
+    </script>
   </body>
 </html>
