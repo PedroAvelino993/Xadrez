@@ -4,6 +4,7 @@ import { Flag, Handshake, RotateCcw, Undo2, Volume2, VolumeX, RefreshCw, Microsc
 import Board, { type BoardMove } from "../components/Board";
 import MoveList from "../components/MoveList";
 import NavControls from "../components/NavControls";
+import MobileNav from "../components/MobileNav";
 import EvalBar from "../components/EvalBar";
 import { Avatar, Modal, PieceIcon, UserAvatar, copyText, downloadText, toast, Switch } from "../components/ui";
 import { BOTS, botById, requestBotMove, type Bot } from "../bots/bots";
@@ -467,7 +468,7 @@ export default function PlayPage() {
   return (
     <div className="page">
       <div className="game-layout">
-        <div className="board-col">
+        <div className={`board-col ${phase === "setup" ? "setup-hide-m" : "sticky-m"}`}>
           {playerBar(topColor)}
           <div className="board-row">
             {settings.playEvalBar && phase !== "setup" && <EvalBar score={liveScore} orientation={orientation} />}
@@ -483,6 +484,27 @@ export default function PlayPage() {
             </div>
           </div>
           {playerBar(orientation)}
+          {phase !== "setup" && (
+            <MobileNav
+              index={view}
+              length={records.length}
+              onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))}
+              label={
+                phase === "over" ? (
+                  <span className="small">{result ? (result.outcome === "win" ? "Você venceu" : result.outcome === "loss" ? "Derrota" : "Empate") : "Fim"}</span>
+                ) : !atLatest ? (
+                  <span className="small" style={{ color: "var(--warning)" }}>Vendo lance anterior</span>
+                ) : (
+                  <span className="small">{turn === playerColor ? "Sua vez" : thinking ? `${bot.name} pensando…` : "Vez do bot"}</span>
+                )
+              }
+              extra={
+                <button className="icon-btn" onClick={() => setOrientation((o) => (o === "w" ? "b" : "w"))} aria-label="Girar tabuleiro">
+                  <RefreshCw size={17} />
+                </button>
+              }
+            />
+          )}
         </div>
 
         <div className="side-panel">
@@ -509,7 +531,7 @@ export default function PlayPage() {
             />
           ) : (
             <div className="card">
-              <div className="card-head">
+              <div className="card-head desktop-only">
                 <div className="row" style={{ minWidth: 0 }}>
                   <Avatar piece={bot.piece} color={bot.color} size={32} />
                   <div style={{ minWidth: 0 }}>
@@ -547,33 +569,37 @@ export default function PlayPage() {
                 </div>
               )}
               <MoveList records={records} startFen={startFen} current={view} onSelect={setView} />
-              <NavControls index={view} length={records.length} onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))} onFlip={() => setOrientation((o) => (o === "w" ? "b" : "w"))} />
-              <div className="game-actions">
+              <div className="desktop-only">
+                <NavControls index={view} length={records.length} onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))} onFlip={() => setOrientation((o) => (o === "w" ? "b" : "w"))} />
+              </div>
+              <div className="actions-grid">
                 {phase === "playing" ? (
                   <>
                     <button className="btn sm" onClick={takeBack} disabled={!undoAllowed || records.length === 0} title={undoAllowed ? "Desfazer seu último lance" : "Desfazer só é permitido em partidas sem relógio"}>
-                      <Undo2 size={16} /> Desfazer
+                      <Undo2 size={16} /> <span className="lbl">Desfazer</span>
                     </button>
                     <button className="btn sm" onClick={offerDraw} disabled={records.length < 2}>
-                      <Handshake size={16} /> Empate
+                      <Handshake size={16} /> <span className="lbl">Empate</span>
                     </button>
                     <button className="btn sm danger" onClick={() => (settings.confirmResign ? setConfirmResign(true) : resign())}>
-                      <Flag size={16} /> Desistir
+                      <Flag size={16} /> <span className="lbl">Desistir</span>
                     </button>
                   </>
                 ) : (
                   <>
                     <button className="btn sm primary" onClick={() => result && navigate(`/revisao/${result.gameId}`)}>
-                      <Microscope size={16} /> Analisar partida
+                      <Microscope size={16} /> <span className="lbl">Analisar</span>
                     </button>
                     <button className="btn sm" onClick={() => start({ swap: false })}>
-                      <RotateCcw size={16} /> Revanche
+                      <RotateCcw size={16} /> <span className="lbl">Revanche</span>
                     </button>
                     <button className="btn sm" onClick={() => setPhase("setup")}>
-                      <Swords size={16} /> Novo jogo
+                      <Swords size={16} /> <span className="lbl">Novo jogo</span>
                     </button>
                   </>
                 )}
+              </div>
+              <div className="icon-row">
                 <button
                   className="icon-btn"
                   onClick={() => updateSettings({ soundEnabled: !settings.soundEnabled })}
@@ -585,9 +611,7 @@ export default function PlayPage() {
                 <button className="icon-btn" onClick={() => copyText(pgnNow(), "PGN copiado")} aria-label="Copiar PGN" title="Copiar PGN">
                   <Copy size={17} />
                 </button>
-              </div>
-              {phase === "playing" && (
-                <div className="restart-row">
+                {phase === "playing" && (
                   <button
                     className="btn ghost sm"
                     onClick={() => {
@@ -599,11 +623,11 @@ export default function PlayPage() {
                   >
                     <RefreshCw size={14} /> Reiniciar
                   </button>
-                  <label className="row xs faint" style={{ gap: 6 }}>
-                    <input type="checkbox" checked={settings.playEvalBar} onChange={(e) => updateSettings({ playEvalBar: e.target.checked })} /> Mostrar avaliação
-                  </label>
-                </div>
-              )}
+                )}
+                <label className="row xs faint" style={{ gap: 6, marginLeft: "auto" }}>
+                  <input type="checkbox" checked={settings.playEvalBar} onChange={(e) => updateSettings({ playEvalBar: e.target.checked })} /> Avaliação
+                </label>
+              </div>
             </div>
           )}
         </div>
@@ -743,109 +767,91 @@ function SetupPanel(p: SetupProps) {
           </div>
         </div>
       )}
-      <div className="card">
-        <div className="card-head">
-          <h2>Jogar contra o computador</h2>
-        </div>
-        <div className="card-body stack">
+      <div className="card setup-card">
+        <div className="card-body setup-body">
           {p.presetName && (
             <div className="feedback info">
-              <div>
-                <h3>Começando de uma posição</h3>
-                <p>{p.presetName}</p>
-              </div>
+              <p>
+                <b>Começando de uma posição:</b> {p.presetName}
+              </p>
             </div>
           )}
-          <div className="bot-hero">
-            <Avatar piece={bot.piece} color={bot.color} size={56} label={bot.name} />
-            <div style={{ minWidth: 0 }}>
-              <div className="row" style={{ gap: 8 }}>
-                <b style={{ fontSize: "1.05rem" }}>{bot.name}</b>
-                <span className="chip">{bot.levelName}</span>
-              </div>
-              <div className="xs faint">
-                {bot.style} · rating estimado ≈ {bot.rating}
-              </div>
-              <p className="small muted" style={{ marginTop: 4 }}>
-                {bot.description}
-              </p>
-              <div className="xs faint" style={{ marginTop: 4 }}>
-                Seu histórico: {total ? `${s.w} vitórias · ${s.d} empates · ${s.l} derrotas` : "nenhuma partida ainda"}
-              </div>
-            </div>
-          </div>
-          <div className="bot-list" role="group" aria-label="Escolha o adversário">
-            {BOTS.map((b) => {
-              const st = p.botStats(b.id);
-              return (
-                <button key={b.id} className="bot-item" aria-pressed={b.id === p.botId} onClick={() => p.setBotId(b.id)}>
-                  <Avatar piece={b.piece} color={b.color} size={36} />
-                  <div className="meta">
-                    <b>{b.name}</b>
-                    <span>
-                      {b.levelName} · ≈{b.rating}
-                    </span>
-                  </div>
-                  <div className="lvl">
-                    <LevelDots level={b.level} />
-                    {st.w + st.l + st.d > 0 && (
-                      <div className="xs faint">
-                        {st.w}V {st.d}E {st.l}D
-                      </div>
-                    )}
-                  </div>
+          <div>
+            <div className="label">Adversário</div>
+            <div className="bot-grid" role="group" aria-label="Escolha o adversário">
+              {BOTS.map((b) => (
+                <button key={b.id} className="bot-tile" aria-pressed={b.id === p.botId} onClick={() => p.setBotId(b.id)} title={b.description}>
+                  <Avatar piece={b.piece} color={b.color} size={38} />
+                  <b>{b.name.replace("Stockfish 18", "Stockfish")}</b>
+                  <span>{b.levelName}</span>
                 </button>
-              );
-            })}
+              ))}
+            </div>
+            <div className="bot-summary">
+              <div className="row between" style={{ gap: 8 }}>
+                <b>
+                  {bot.name} <span className="faint xs">· ≈{bot.rating} (estimado)</span>
+                </b>
+                <LevelDots level={bot.level} />
+              </div>
+              <p className="xs muted">{bot.description}</p>
+              {total > 0 && (
+                <p className="xs faint">
+                  Você contra {bot.name}: {s.w}V · {s.d}E · {s.l}D
+                </p>
+              )}
+            </div>
           </div>
 
           <div>
             <div className="label">Jogar com</div>
             <div className="color-pick" role="group" aria-label="Cor">
               <button aria-pressed={p.colorChoice === "w"} onClick={() => p.setColorChoice("w")}>
-                <PieceIcon type="k" color="w" size={30} /> Brancas
+                <PieceIcon type="k" color="w" size={22} /> Brancas
               </button>
               <button aria-pressed={p.colorChoice === "r"} onClick={() => p.setColorChoice("r")}>
-                <Shuffle size={28} /> Aleatório
+                <Shuffle size={18} /> Sortear
               </button>
               <button aria-pressed={p.colorChoice === "b"} onClick={() => p.setColorChoice("b")}>
-                <PieceIcon type="k" color="b" size={30} /> Pretas
+                <PieceIcon type="k" color="b" size={22} /> Pretas
               </button>
             </div>
           </div>
 
           <div>
-            <div className="label">Ritmo</div>
+            <div className="label">Tempo</div>
             <div className="tc-grid" role="group" aria-label="Controle de tempo">
               {TIME_CONTROLS.map((t) => (
-                <button key={t.id} className="tc-btn" aria-pressed={p.tcId === t.id} onClick={() => p.setTcId(t.id)}>
-                  {t.label}
-                  <small>{t.group}</small>
+                <button key={t.id} className={`tc-btn ${t.id === "none" ? "wide" : ""}`} aria-pressed={p.tcId === t.id} onClick={() => p.setTcId(t.id)} title={t.group}>
+                  {t.id === "none" ? "Sem relógio" : t.label}
                 </button>
               ))}
               <button className="tc-btn" aria-pressed={p.tcId === "custom"} onClick={() => p.setTcId("custom")}>
-                Personalizado
-                <small>
-                  {p.custom.min} | {p.custom.inc}
-                </small>
+                Outro
               </button>
             </div>
             {p.tcId === "custom" && (
-              <div className="grid-2" style={{ marginTop: 10 }}>
+              <div className="grid-2" style={{ marginTop: 8, gap: 8 }}>
                 <label className="field">
-                  Minutos por jogador
+                  Minutos
                   <input className="input" type="number" min={0.5} max={180} step={0.5} value={p.custom.min} onChange={(e) => p.setCustom({ ...p.custom, min: Math.max(0.5, Math.min(180, +e.target.value || 1)) })} />
                 </label>
                 <label className="field">
-                  Incremento (segundos)
+                  Incremento (s)
                   <input className="input" type="number" min={0} max={60} value={p.custom.inc} onChange={(e) => p.setCustom({ ...p.custom, inc: Math.max(0, Math.min(60, +e.target.value || 0)) })} />
                 </label>
               </div>
             )}
+            {untimed && (
+              <div style={{ marginTop: 10 }}>
+                <Switch checked={p.allowUndo} onChange={p.setAllowUndo} label={<span className="small">Permitir desfazer lances</span>} />
+              </div>
+            )}
           </div>
-          <Switch checked={untimed && p.allowUndo} onChange={(v) => untimed && p.setAllowUndo(v)} label={<span className={untimed ? "" : "faint"}>Permitir desfazer lances {untimed ? "" : "(só sem relógio)"}</span>} />
+        </div>
+        <div className="setup-go">
           <button className="btn primary lg block" onClick={p.onStart}>
-            <Swords size={18} /> Jogar
+            <Swords size={18} /> Jogar contra {bot.name.replace("Stockfish 18", "o Stockfish")}
           </button>
         </div>
       </div>

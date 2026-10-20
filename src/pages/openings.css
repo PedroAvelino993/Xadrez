@@ -14,3 +14,8 @@
 .search-item:hover { background: var(--surface-2); }
 .link-btn { border: 0; background: none; text-align: left; cursor: pointer; padding: 4px 0; color: var(--text); min-width: 0; }
 .link-btn:hover b { color: var(--accent-text); }
+@media (max-width: 860px) {
+  .quick-row.mobile-only { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .quick-row .chip { flex: none; }
+  .next-moves { max-height: 200px; }
+}

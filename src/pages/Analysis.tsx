@@ -7,9 +7,11 @@ import EngineLines from "../components/EngineLines";
 import MoveList from "../components/MoveList";
 import NavControls from "../components/NavControls";
 import MoveVerdict from "../components/MoveVerdict";
+import MobileNav from "../components/MobileNav";
 import ImportModal from "../components/ImportModal";
-import { copyText, downloadText, toast } from "../components/ui";
+import { ClassIcon, copyText, downloadText, toast } from "../components/ui";
 import { useLiveAnalysis, useEvalOnce } from "../hooks/useLiveAnalysis";
+import { formatScore } from "../engine/score";
 import { buildPgn, parsePgn, parseUci, START_FEN, toRecord, validateFen } from "../chess/rules";
 import type { Color, MoveRecord } from "../types";
 import { updateSettings, useSettings } from "../storage/store";
@@ -124,14 +126,35 @@ export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string 
   return (
     <div className="page">
       <div className="game-layout">
-        <div className="board-col">
+        <div className="board-col sticky-m">
           <div className="board-row">
             <EvalBar score={engineOn ? top?.score ?? null : null} orientation={orientation} loading={live.running} />
             <div className="board-holder">
               <Board fen={current} orientation={orientation} movable="both" onMove={onMove} lastMove={rec ? { from: rec.from, to: rec.to } : null} arrows={arrows} badge={verdict && rec ? { square: rec.to, kind: verdict.cls } : null} />
             </div>
           </div>
-          <div className="row wrap toolbar">
+          <MobileNav
+            index={view}
+            length={records.length}
+            onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))}
+            label={
+              rec ? (
+                <>
+                  {verdict && <ClassIcon kind={verdict.cls} size={18} />}
+                  <span>{rec.san}</span>
+                  {top && <span className="faint xs">{formatScore(top.score)}</span>}
+                </>
+              ) : (
+                <span className="faint small">{top ? `Avaliação ${formatScore(top.score)}` : "Posição inicial"}</span>
+              )
+            }
+            extra={
+              <button className="icon-btn" onClick={() => setOrientation((o) => (o === "w" ? "b" : "w"))} aria-label="Girar tabuleiro">
+                <RotateCcw size={17} style={{ transform: "scaleX(-1)" }} />
+              </button>
+            }
+          />
+          <div className="row wrap toolbar desktop-only">
             <button className="btn sm" onClick={() => setImporting(true)}>
               <FileInput size={15} /> Importar FEN/PGN
             </button>
@@ -147,41 +170,6 @@ export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string 
           </div>
         </div>
         <div className="side-panel">
-          <div className="card">
-            <EngineLines
-              fen={current}
-              result={live.result}
-              running={live.running}
-              error={live.error}
-              terminal={live.terminal}
-              enabled={engineOn}
-              onToggle={setEngineOn}
-              onPlayLine={playLine}
-              targetDepth={settings.analysisDepth}
-            />
-            <div className="row between engine-opts">
-              <label className="row xs" style={{ gap: 6 }}>
-                Linhas
-                <select className="select sm-select" value={settings.analysisLines} onChange={(e) => updateSettings({ analysisLines: +e.target.value })}>
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <option key={n}>{n}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="row xs" style={{ gap: 6 }}>
-                Profundidade
-                <select className="select sm-select" value={settings.analysisDepth} onChange={(e) => updateSettings({ analysisDepth: +e.target.value })}>
-                  {[12, 14, 16, 18, 20, 22, 24].map((n) => (
-                    <option key={n}>{n}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="row xs" style={{ gap: 6 }}>
-                <input type="checkbox" checked={showArrow} onChange={(e) => setShowArrow(e.target.checked)} /> Seta
-              </label>
-            </div>
-          </div>
-
           {rec && engineOn && (
             <div className="card">
               {verdict ? (
@@ -220,11 +208,62 @@ export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string 
           )}
 
           <div className="card">
+            <EngineLines
+              fen={current}
+              result={live.result}
+              running={live.running}
+              error={live.error}
+              terminal={live.terminal}
+              enabled={engineOn}
+              onToggle={setEngineOn}
+              onPlayLine={playLine}
+              targetDepth={settings.analysisDepth}
+            />
+            <div className="row between engine-opts">
+              <label className="row xs" style={{ gap: 6 }}>
+                Linhas
+                <select className="select sm-select" value={settings.analysisLines} onChange={(e) => updateSettings({ analysisLines: +e.target.value })}>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <option key={n}>{n}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="row xs" style={{ gap: 6 }}>
+                Profundidade
+                <select className="select sm-select" value={settings.analysisDepth} onChange={(e) => updateSettings({ analysisDepth: +e.target.value })}>
+                  {[12, 14, 16, 18, 20, 22, 24].map((n) => (
+                    <option key={n}>{n}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="row xs" style={{ gap: 6 }}>
+                <input type="checkbox" checked={showArrow} onChange={(e) => setShowArrow(e.target.checked)} /> Seta
+              </label>
+            </div>
+          </div>
+
+          <div className="card">
             <MoveList records={records} startFen={startFen} current={view} onSelect={setView} emptyText="Mova as peças para analisar. Os dois lados podem jogar." />
-            <NavControls index={view} length={records.length} onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))} onFlip={() => setOrientation((o) => (o === "w" ? "b" : "w"))} />
-            <div className="game-actions">
+            <div className="desktop-only">
+              <NavControls index={view} length={records.length} onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))} onFlip={() => setOrientation((o) => (o === "w" ? "b" : "w"))} />
+            </div>
+            <div className="actions-grid mobile-only" style={{ display: "grid" }}>
+              <button className="btn sm" onClick={() => setImporting(true)}>
+                <FileInput size={15} /> <span className="lbl">Importar</span>
+              </button>
+              <button className="btn sm" onClick={() => copyText(current, "FEN copiada")}>
+                <ClipboardCopy size={15} /> <span className="lbl">FEN</span>
+              </button>
+              <button className="btn sm" onClick={() => copyText(pgnText(), "PGN copiado")} disabled={!records.length}>
+                <ClipboardCopy size={15} /> <span className="lbl">PGN</span>
+              </button>
+              <button className="btn sm" onClick={() => downloadText("analise.pgn", pgnText())} disabled={!records.length} aria-label="Baixar PGN">
+                <Download size={15} />
+              </button>
+            </div>
+            <div className="actions-grid">
               <button className="btn sm" onClick={() => navigate(`/jogar?fen=${encodeURIComponent(current)}`)}>
-                <Swords size={15} /> Jogar contra bot daqui
+                <Swords size={15} /> <span className="lbl">Jogar daqui</span>
               </button>
               <button
                 className="btn sm"
@@ -234,10 +273,10 @@ export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string 
                   navigate("/revisao/importada");
                 }}
               >
-                <Microscope size={15} /> Revisar partida
+                <Microscope size={15} /> <span className="lbl">Revisar</span>
               </button>
               <button className="btn sm" onClick={() => navigate(`/posicoes/editor?fen=${encodeURIComponent(current)}`)}>
-                <PencilRuler size={15} /> Editar posição
+                <PencilRuler size={15} /> <span className="lbl">Editar</span>
               </button>
               <button
                 className="btn sm ghost"
@@ -247,7 +286,7 @@ export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string 
                 disabled={view >= records.length - 1}
                 title="Apagar os lances depois da posição atual"
               >
-                <Trash2 size={15} /> Cortar depois
+                <Trash2 size={15} /> <span className="lbl">Cortar</span>
               </button>
               <button
                 className="btn sm ghost"
@@ -257,11 +296,11 @@ export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string 
                   setView(-1);
                 }}
               >
-                <RotateCcw size={15} /> Reiniciar
+                <RotateCcw size={15} /> <span className="lbl">Limpar</span>
               </button>
             </div>
           </div>
-          <div className="tip xs faint">
+          <div className="tip xs faint desktop-only">
             <Lightbulb size={13} /> Clique com o botão direito para desenhar setas (Shift = vermelha) e círculos. Clique numa linha do motor para jogar o lance.
           </div>
         </div>

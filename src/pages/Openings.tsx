@@ -4,6 +4,7 @@ import { BookOpen, ClipboardCopy, Cpu, FileInput, Info, Microscope, Search, Star
 import Board, { type BoardMove } from "../components/Board";
 import MoveList from "../components/MoveList";
 import NavControls from "../components/NavControls";
+import MobileNav from "../components/MobileNav";
 import EngineLines from "../components/EngineLines";
 import ImportModal from "../components/ImportModal";
 import { copyText, San, toast } from "../components/ui";
@@ -101,27 +102,33 @@ export default function OpeningsPage() {
   }, [book, query]);
 
   const lineSans = shown.map((r) => r.san);
+  const quick = QUICK.map((q) => (
+    <button key={q.label} className="chip quick" onClick={() => setLine(q.moves.split(" "))}>
+      {q.label}
+    </button>
+  ));
   const lineName = info?.named?.namePt ?? "Posição inicial";
   const pgn = () => buildPgn(START_FEN, lineSans, { Event: info?.named ? `${info.named.eco} ${info.named.name}` : "Abertura" });
 
   return (
     <div className="page">
       <div className="game-layout">
-        <div className="board-col">
+        <div className="board-col sticky-m">
           <div className="board-row">
             <div className="board-holder">
               <Board fen={fen} orientation={orientation} movable="both" onMove={addMove} lastMove={view >= 0 ? { from: records[view].from, to: records[view].to } : null} arrows={info?.next.slice(0, 4).map((n, i) => ({ from: n.uci.slice(0, 2), to: n.uci.slice(2, 4), color: "blue" as const, opacity: 0.85 - i * 0.18 }))} />
             </div>
           </div>
-          <div className="quick-row">
-            {QUICK.map((q) => (
-              <button key={q.label} className="chip quick" onClick={() => setLine(q.moves.split(" "))}>
-                {q.label}
-              </button>
-            ))}
-          </div>
+          <MobileNav
+            index={view}
+            length={records.length}
+            onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))}
+            label={<span className="small" style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{view >= 0 ? records[view].san : "Início"}</span>}
+          />
+          <div className="quick-row desktop-only">{quick}</div>
         </div>
         <div className="side-panel">
+          <div className="quick-row mobile-only">{quick}</div>
           <div className="card">
             <div className="card-head">
               <div style={{ minWidth: 0 }}>
@@ -178,10 +185,12 @@ export default function OpeningsPage() {
               </div>
             ) : null}
             <MoveList records={records} startFen={START_FEN} current={view} onSelect={setView} emptyText="Escolha um lance na lista ou jogue no tabuleiro." />
-            <NavControls index={view} length={records.length} onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))} onFlip={() => setOrientation((o) => (o === "w" ? "b" : "w"))} />
-            <div className="game-actions">
+            <div className="desktop-only">
+              <NavControls index={view} length={records.length} onGo={(i) => setView(Math.max(-1, Math.min(records.length - 1, i)))} onFlip={() => setOrientation((o) => (o === "w" ? "b" : "w"))} />
+            </div>
+            <div className="actions-grid">
               <button className="btn sm primary" disabled={!shown.length} onClick={() => navigate(`/jogar?moves=${prefix.join(",")}&name=${encodeURIComponent(lineName)}&color=${orientation}`)}>
-                <Swords size={15} /> Praticar contra bot
+                <Swords size={15} /> <span className="lbl">Praticar</span>
               </button>
               <button
                 className="btn sm"
@@ -191,13 +200,13 @@ export default function OpeningsPage() {
                   toast("Linha salva nas favoritas", "ok");
                 }}
               >
-                <Star size={15} /> Salvar linha
+                <Star size={15} /> <span className="lbl">Salvar</span>
               </button>
               <button className="btn sm" onClick={() => setImporting(true)}>
-                <FileInput size={15} /> Importar PGN
+                <FileInput size={15} /> <span className="lbl">Importar</span>
               </button>
               <button className="btn sm ghost" disabled={!shown.length} onClick={() => copyText(pgn(), "PGN copiado")}>
-                <ClipboardCopy size={15} /> PGN
+                <ClipboardCopy size={15} /> <span className="lbl">PGN</span>
               </button>
             </div>
           </div>

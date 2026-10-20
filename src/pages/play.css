@@ -8,3 +8,24 @@
 .level-dots i.on { background: var(--accent); }
 .thinking { display: inline-flex; align-items: center; }
 .result-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 14px; text-align: center; }
+/* compact setup */
+.setup-body { display: flex; flex-direction: column; gap: 14px; }
+.bot-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.bot-tile { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px 7px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-2); cursor: pointer; min-width: 0; transition: border-color var(--t-fast), background var(--t-fast); }
+.bot-tile b { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.bot-tile span { font-size: 0.66rem; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.bot-tile:hover { background: var(--surface-3); }
+.bot-tile[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.bot-summary { margin-top: 8px; padding: 9px 11px; border-radius: var(--radius); background: var(--surface-2); display: flex; flex-direction: column; gap: 3px; }
+.color-pick { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.color-pick button { flex-direction: row; justify-content: center; gap: 6px; padding: 7px 4px; font-size: 0.84rem; min-width: 0; }
+.tc-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+.tc-btn { padding: 8px 2px; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.setup-go { position: sticky; bottom: 0; padding: 10px 16px 14px; background: linear-gradient(to top, var(--surface-1) 75%, transparent); border-radius: 0 0 var(--radius-l) var(--radius-l); }
+@media (max-width: 860px) {
+  .board-col.setup-hide-m { display: none; }
+  .setup-card { border-radius: var(--radius); }
+  .setup-body { padding: 12px; gap: 12px; }
+  .setup-go { bottom: 0; padding: 10px 12px 12px; }
+}
+.tc-btn.wide { grid-column: span 2; }

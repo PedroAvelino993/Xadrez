@@ -411,7 +411,7 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
   return (
     <div className="page">
       <div className="game-layout">
-        <div className="board-col">
+        <div className="board-col sticky-m">
           <div className="board-row">
             <div className="board-holder">
               <Board fen={fen} orientation={solverColor} movable={status === "your-turn" ? solverColor : "none"} onMove={onMove} lastMove={last} marks={marks} arrows={arrows} mated={new Chess(fen).isCheckmate()} />

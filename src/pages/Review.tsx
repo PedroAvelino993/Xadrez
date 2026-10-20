@@ -4,6 +4,7 @@ import { ArrowLeft, Download, Info, Pause, Play, X, Eye, EyeOff, Microscope, Cop
 import Board, { type Arrow, type BoardMove } from "../components/Board";
 import EvalBar from "../components/EvalBar";
 import EvalGraph from "../components/EvalGraph";
+import MobileNav from "../components/MobileNav";
 import MoveList from "../components/MoveList";
 import NavControls from "../components/NavControls";
 import MoveVerdict from "../components/MoveVerdict";
@@ -229,7 +230,7 @@ export default function ReviewPage({ gameId }: { gameId?: string }) {
   return (
     <div className="page">
       <div className="game-layout">
-        <div className="board-col">
+        <div className="board-col sticky-m">
           <div className="board-row">
             <EvalBar score={explore ? live.result?.lines[0]?.score ?? null : showBefore && mv ? mv.before : positionScore ?? null} orientation={orientation} loading={!!progress || live.running} />
             <div className="board-holder">
@@ -245,7 +246,53 @@ export default function ReviewPage({ gameId }: { gameId?: string }) {
               />
             </div>
           </div>
-          {review && !explore && <EvalGraph scores={review.positions.map((p) => p.score)} classes={classes} current={view} onSelect={(i) => { setView(i); setTab("moves"); }} />}
+          {explore ? (
+            <MobileNav
+              index={explore.view}
+              length={explore.records.length}
+              onGo={(i) => setExplore({ ...explore, view: Math.max(-1, Math.min(explore.records.length - 1, i)) })}
+              label={<span className="small">{explore.view >= 0 ? explore.records[explore.view].san : "Início da linha"}</span>}
+            />
+          ) : (
+            <MobileNav
+              index={view}
+              length={game.records.length}
+              onGo={(i) => {
+                setAuto(false);
+                setTab("moves");
+                setView(Math.max(-1, Math.min(game.records.length - 1, i)));
+              }}
+              label={
+                rec ? (
+                  <>
+                    {mv && <ClassIcon kind={mv.cls} size={18} />}
+                    <span>
+                      {Math.floor(view / 2) + 1}
+                      {rec.color === "w" ? "." : "..."} {rec.san}
+                    </span>
+                    {mv && <span className="faint xs">{formatScore(mv.after)}</span>}
+                  </>
+                ) : (
+                  <span className="faint small">Posição inicial</span>
+                )
+              }
+              extra={
+                <>
+                  <button className={`icon-btn ${auto ? "active" : ""}`} onClick={() => setAuto((a) => !a)} aria-label={auto ? "Pausar" : "Reproduzir"}>
+                    {auto ? <Pause size={18} /> : <Play size={18} />}
+                  </button>
+                  <button className={`icon-btn ${showBefore ? "active" : ""}`} onClick={() => setShowBefore((b) => !b)} disabled={!rec} aria-label="Posição antes do lance">
+                    {showBefore ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </>
+              }
+            />
+          )}
+          {review && !explore && (
+            <div className="desktop-only">
+              <EvalGraph scores={review.positions.map((p) => p.score)} classes={classes} current={view} onSelect={(i) => { setView(i); setTab("moves"); }} />
+            </div>
+          )}
         </div>
 
         <div className="side-panel">
@@ -313,7 +360,9 @@ export default function ReviewPage({ gameId }: { gameId?: string }) {
                 targetDepth={Math.min(settings.analysisDepth, 20)}
               />
               <MoveList records={explore.records} startFen={explore.startFen} current={explore.view} onSelect={(i) => setExplore({ ...explore, view: i })} emptyText="Jogue lances para explorar." />
+              <div className="desktop-only">
               <NavControls index={explore.view} length={explore.records.length} onGo={(i) => setExplore({ ...explore, view: Math.max(-1, Math.min(explore.records.length - 1, i)) })} onFlip={() => setOrientation((o) => (o === "w" ? "b" : "w"))} />
+              </div>
             </div>
           ) : (
             review && (
@@ -329,6 +378,9 @@ export default function ReviewPage({ gameId }: { gameId?: string }) {
 
                 {tab === "summary" ? (
                   <div className="card-body stack">
+                    <div className="mobile-only" style={{ display: "block" }}>
+                      <EvalGraph scores={review.positions.map((p) => p.score)} classes={classes} current={view} onSelect={(i) => { setView(i); setTab("moves"); }} />
+                    </div>
                     <div className="acc-row">
                       {(["w", "b"] as Color[]).map((c) => (
                         <div key={c} className={`acc ${c}`}>
@@ -457,6 +509,7 @@ export default function ReviewPage({ gameId }: { gameId?: string }) {
                       </div>
                     )}
                     <MoveList records={game.records} startFen={game.startFen} current={view} onSelect={setView} classes={classes} />
+                    <div className="desktop-only">
                     <NavControls
                       index={view}
                       length={game.records.length}
@@ -476,6 +529,7 @@ export default function ReviewPage({ gameId }: { gameId?: string }) {
                         </>
                       }
                     />
+                    </div>
                     {showBefore && rec && <div className="xs faint" style={{ padding: "0 14px 10px", textAlign: "center" }}>Posição antes de {rec.san}: seta verde = melhor lance; seta vermelha/amarela = lance jogado.</div>}
                   </>
                 )}

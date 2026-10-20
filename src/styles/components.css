@@ -202,3 +202,41 @@
 .mode-icon.yellow { background: var(--warning-soft); color: var(--warning); }
 .mode-icon.blue { background: var(--info-soft); color: var(--info); }
 .mode-icon.red { background: var(--danger-soft); color: var(--danger); }
+
+/* ---------- Mobile compaction ---------- */
+.mobile-only { display: none !important; }
+@media (max-width: 860px) {
+  .mobile-only { display: flex !important; }
+  .desktop-only { display: none !important; }
+  /* keep the board in view while the panel scrolls underneath */
+  .board-col.sticky-m {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    background: var(--bg);
+    margin: -12px -12px 0;
+    padding: 8px 12px 6px;
+    box-shadow: 0 6px 12px -8px rgba(0, 0, 0, 0.6);
+    gap: 4px;
+  }
+  .game-layout { --board-size: min(calc(100vw - 24px), 47dvh); }
+  .board-row { justify-content: center; }
+  .player-bar { min-height: 34px; gap: 8px; }
+  .player-bar .avatar { width: 30px !important; height: 30px !important; }
+  .player-bar .captured { min-height: 14px; }
+  .player-bar .captured img { width: 14px; height: 14px; }
+  .clock { font-size: 1rem; min-width: 74px; padding: 3px 8px; }
+  .movelist { max-height: 180px; }
+}
+
+/* compact nav strip right under the board */
+.mnav { display: flex; align-items: center; gap: 2px; justify-content: space-between; min-height: 40px; }
+.mnav .icon-btn { width: 40px; height: 38px; }
+.mnav .cur { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 650; font-size: 0.9rem; white-space: nowrap; overflow: hidden; }
+
+/* action rows never overflow: equal columns that shrink */
+.actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; padding: 10px 12px; border-top: 1px solid var(--border); }
+.actions-grid .btn { min-width: 0; padding: 8px 6px; font-size: 0.82rem; }
+.actions-grid .btn span.lbl { overflow: hidden; text-overflow: ellipsis; }
+.icon-row { display: flex; align-items: center; gap: 2px; padding: 4px 8px 8px; flex-wrap: wrap; }
+.btn { min-width: 0; }
