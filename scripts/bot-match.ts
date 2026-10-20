@@ -1,6 +1,6 @@
 // Plays matches between adjacent bot levels using the app's own bot code
 // (src/bots/bots.ts) and the same Stockfish 18 lite WASM build, run in Node.
-// Usage: npx vite-node scripts/bot-match.ts [gamesPerPair]
+// Usage: npx vite-node scripts/bot-match.ts [gamesPerPair] [firstLevelIndex]
 import { spawn } from "node:child_process";
 import { Chess } from "chess.js";
 import { BOTS, softmaxPick, type Bot } from "../src/bots/bots";
@@ -101,7 +101,7 @@ const e = new Uci();
 const judge = new Uci();
 await e.init();
 await judge.init();
-for (let i = 0; i < BOTS.length - 1; i++) {
+for (let i = +(process.argv[3] ?? 0); i < BOTS.length - 1; i++) {
   const a = BOTS[i],
     b = BOTS[i + 1];
   let scoreB = 0;

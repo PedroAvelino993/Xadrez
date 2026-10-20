@@ -1,0 +1,808 @@
+{
+  "id": "tatica",
+  "title": "Tática",
+  "description": "Os golpes táticos que decidem a maioria das partidas: garfos, cravadas, espetos, ataques duplos e descobertos, peças indefesas e os padrões de mate mais comuns.",
+  "level": "Iniciante a intermediário",
+  "lessons": [
+    {
+      "id": "tat-garfo",
+      "title": "Garfos",
+      "minutes": 8,
+      "intro": "Um garfo é quando uma única peça ataca duas ou mais peças inimigas ao mesmo tempo.",
+      "steps": [
+        {
+          "kind": "text",
+          "title": "O que é um garfo",
+          "body": [
+            "No **garfo**, uma peça ataca duas (ou mais) peças adversárias de uma só vez. O adversário só pode salvar uma delas com um lance, e você captura a outra.",
+            "Qualquer peça pode dar garfo, mas o **cavalo** é o grande especialista: ele salta por cima das outras peças e ataca casas de cores alternadas, o que torna seus garfos difíceis de prever.",
+            "Os garfos mais fortes envolvem o **rei**: se uma das peças atacadas é o rei (xeque), o adversário é obrigado a responder ao xeque e perde a outra peça. Esse é o chamado **garfo real** quando atinge rei e dama."
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Garfo de cavalo em rei e dama",
+          "fen": "q3k3/pp3ppp/8/1N6/8/8/PP3PPP/4K3 w - - 0 1",
+          "caption": "O cavalo salta para c7 dando xeque no rei em e8 e atacando a dama em a8 ao mesmo tempo. As pretas precisam mover o rei, e o cavalo captura a dama.",
+          "arrows": [
+            {
+              "from": "b5",
+              "to": "c7",
+              "color": "green"
+            },
+            {
+              "from": "c7",
+              "to": "e8",
+              "color": "red"
+            },
+            {
+              "from": "c7",
+              "to": "a8",
+              "color": "red"
+            }
+          ],
+          "marks": [
+            {
+              "sq": "c7",
+              "type": "good"
+            }
+          ],
+          "moves": [
+            "b5c7",
+            "e8d7",
+            "c7a8"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Como encontrar garfos",
+          "body": [
+            "Procure peças adversárias **desprotegidas** e o **rei** sem cobertura. Depois pergunte: existe uma casa de onde uma das minhas peças ataca duas delas ao mesmo tempo?",
+            "Lembre-se também do **garfo de peão**: um peão que avança e ataca duas peças maiores costuma ganhar material, porque o peão vale muito menos do que as peças atacadas."
+          ]
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-1",
+          "prompt": "As brancas jogam. Encontre o garfo que ganha a dama.",
+          "fen": "q3k3/pp3ppp/8/1N6/8/8/PP3PPP/4K3 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "b5c7"
+            ]
+          },
+          "hint": "Procure uma casa de onde o cavalo dê xeque e ataque a dama em a8.",
+          "success": "Cc7+! O cavalo dá xeque no rei e ataca a dama ao mesmo tempo. Depois que o rei sair, Cxa8 ganha a dama."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-2",
+          "prompt": "As brancas jogam. Use o peão para atacar dois cavalos de uma vez.",
+          "fen": "4k3/pp3ppp/2n1n3/8/3P4/8/PP3PPP/2B1K3 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d4d5"
+            ]
+          },
+          "hint": "Um peão ataca as duas casas na diagonal à sua frente. Qual avanço atinge c6 e e6?",
+          "success": "d5! O peão ataca os cavalos em c6 e e6 ao mesmo tempo. As pretas só conseguem salvar um deles, e as brancas ganham uma peça por um peão."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-3",
+          "prompt": "As brancas jogam. Encontre o garfo de dama que ganha a torre.",
+          "fen": "r5k1/6pp/8/8/8/8/5PPP/3Q2K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d1d5"
+            ]
+          },
+          "hint": "A dama pode dar xeque pela diagonal a2–g8 e, da mesma casa, mirar a torre em a8.",
+          "success": "Dd5+! A dama dá xeque no rei pela diagonal e ataca a torre em a8 pela outra diagonal. Depois que o rei se move, Dxa8 ganha a torre."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-4",
+          "prompt": "As brancas jogam. Ganhe a torre com um garfo de cavalo.",
+          "fen": "2r3k1/5ppp/8/3N4/8/8/5PPP/6K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d5e7"
+            ]
+          },
+          "hint": "Qual casa do cavalo ataca ao mesmo tempo g8 e c8?",
+          "success": "Ce7+! O cavalo dá xeque no rei em g8 e ataca a torre em c8. O rei precisa sair do xeque e as brancas capturam a torre."
+        },
+        {
+          "kind": "summary",
+          "points": [
+            "Garfo: uma peça ataca duas ou mais peças inimigas ao mesmo tempo.",
+            "O cavalo é o especialista em garfos, mas peões, damas e outras peças também garfam.",
+            "Garfos com xeque são os mais fortes, porque o adversário é obrigado a responder ao xeque.",
+            "Procure peças desprotegidas e o rei exposto: são os alvos naturais de um garfo."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tat-cravada",
+      "title": "Cravadas (absoluta e relativa)",
+      "minutes": 9,
+      "intro": "Na cravada, uma peça fica presa porque, se sair do lugar, expõe uma peça mais valiosa atrás dela.",
+      "steps": [
+        {
+          "kind": "text",
+          "title": "O que é uma cravada",
+          "body": [
+            "A **cravada** acontece quando uma peça de longo alcance (bispo, torre ou dama) ataca uma peça inimiga que tem, atrás dela na mesma linha, uma peça mais valiosa.",
+            "Na **cravada absoluta**, a peça de trás é o **rei**. A peça cravada simplesmente não pode se mover, porque seria ilegal deixar o próprio rei em xeque.",
+            "Na **cravada relativa**, a peça de trás é outra peça valiosa (por exemplo, a dama). A peça cravada pode se mover, mas isso normalmente custa caro: a peça de trás é capturada."
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Cravada absoluta",
+          "fen": "4k3/pp3ppp/2n5/1B6/3P4/8/PP3PPP/4K3 w - - 0 1",
+          "caption": "O bispo em b5 crava o cavalo de c6 contra o rei em e8. O cavalo não pode sair do lugar: ele está paralisado e pode ser atacado novamente.",
+          "arrows": [
+            {
+              "from": "b5",
+              "to": "e8",
+              "color": "red"
+            }
+          ],
+          "marks": [
+            {
+              "sq": "c6",
+              "type": "target"
+            }
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Cravada relativa",
+          "fen": "rnbqkb1r/ppp2ppp/4pn2/3p2B1/2PP4/2N5/PP2PPPP/R2QKBNR b KQkq - 3 4",
+          "caption": "O bispo em g5 crava o cavalo de f6 contra a dama em d8. O cavalo pode até se mover, mas então o bispo captura a dama. Por isso as pretas costumam jogar ...Be7 para desfazer a cravada.",
+          "arrows": [
+            {
+              "from": "g5",
+              "to": "d8",
+              "color": "yellow"
+            }
+          ],
+          "marks": [
+            {
+              "sq": "f6",
+              "type": "target"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Como explorar uma cravada",
+          "body": [
+            "**Ataque a peça cravada** de novo, de preferência com um peão: ela não pode fugir, e os defensores muitas vezes não bastam.",
+            "**Crave peças valiosas**: cravar a dama contra o rei ganha a dama pelo preço da peça que crava.",
+            "Cuidado com a cravada relativa: como a peça cravada pode se mover, às vezes ela escapa dando xeque ou atacando algo. Sempre confira essas respostas."
+          ]
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-5",
+          "prompt": "As brancas jogam. Crave a dama preta contra o rei.",
+          "fen": "6k1/6pp/5p2/3q4/8/1P6/P4PPP/5BK1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "f1c4"
+            ]
+          },
+          "hint": "Coloque o bispo na diagonal a2–g8, onde estão a dama e o rei pretos. O peão de b3 protege a casa certa.",
+          "success": "Bc4! O bispo crava a dama contra o rei em g8. A dama não pode sair da diagonal; o máximo que as pretas conseguem é Dxc4, e depois de bxc4 as brancas ganharam a dama em troca do bispo."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-6",
+          "prompt": "As brancas jogam. O cavalo de c6 está cravado. Ataque-o!",
+          "fen": "4k3/pp3ppp/2n5/1B6/3P4/8/PP3PPP/4K3 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d4d5"
+            ]
+          },
+          "hint": "Uma peça cravada não pode fugir. Qual peão pode atacá-la?",
+          "success": "d5! O cavalo está cravado contra o rei e não pode escapar. As brancas ganham uma peça por um peão."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-7",
+          "prompt": "As brancas jogam. Use a torre para cravar a dama contra o rei.",
+          "fen": "4k3/pp3ppp/8/4q3/8/8/PP1K1PPP/7R w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "h1e1"
+            ]
+          },
+          "hint": "A dama e o rei pretos estão na mesma coluna. Qual torre os alinharia? O rei branco protege a casa.",
+          "success": "Te1! A dama está cravada contra o rei. Ela não pode sair da coluna e, se capturar a torre, o rei branco recaptura: as brancas trocam uma torre pela dama."
+        },
+        {
+          "kind": "summary",
+          "points": [
+            "Cravada: uma peça não pode (ou não deve) se mover porque exporia uma peça mais valiosa atrás dela.",
+            "Absoluta: a peça de trás é o rei, e mover a peça cravada é ilegal.",
+            "Relativa: a peça de trás é outra peça; mover a peça cravada é legal, mas costuma perder material.",
+            "Explore cravadas atacando a peça cravada, de preferência com peões."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tat-espeto",
+      "title": "Espetos",
+      "minutes": 7,
+      "intro": "O espeto é o contrário da cravada: a peça mais valiosa está na frente e, ao sair, entrega a que está atrás.",
+      "steps": [
+        {
+          "kind": "text",
+          "title": "O que é um espeto",
+          "body": [
+            "No **espeto**, você ataca uma peça valiosa (muitas vezes o rei) que tem, atrás dela na mesma linha, outra peça. Quando a peça da frente sai do caminho, você captura a de trás.",
+            "A diferença em relação à cravada é a ordem: na cravada a peça menos valiosa está na frente; no espeto a **mais valiosa** está na frente.",
+            "Os espetos com **xeque** são os mais fortes: o rei é obrigado a sair e a peça de trás fica sem proteção."
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Espeto com a torre",
+          "fen": "3q4/pp6/8/3k4/8/8/PP6/R3K3 w - - 0 1",
+          "caption": "Td1+ dá xeque no rei pela coluna d. O rei precisa sair da coluna e a torre captura a dama em d8.",
+          "arrows": [
+            {
+              "from": "a1",
+              "to": "d1",
+              "color": "green"
+            },
+            {
+              "from": "d1",
+              "to": "d8",
+              "color": "red"
+            }
+          ],
+          "marks": [
+            {
+              "sq": "d8",
+              "type": "target"
+            }
+          ],
+          "moves": [
+            "a1d1",
+            "d5c4",
+            "d1d8"
+          ]
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-8",
+          "prompt": "As brancas jogam. Ganhe a dama com um espeto.",
+          "fen": "3q4/pp6/8/3k4/8/8/PP6/R3K3 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "a1d1"
+            ]
+          },
+          "hint": "O rei e a dama pretos estão na mesma coluna. Dê xeque por ela.",
+          "success": "Td1+! O rei é obrigado a sair da coluna d e a torre captura a dama em d8."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-9",
+          "prompt": "As brancas jogam. Use o bispo para espetar rei e torre.",
+          "fen": "6r1/pp6/4k3/8/8/8/PP3PPP/5BK1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "f1c4"
+            ]
+          },
+          "hint": "O rei em e6 e a torre em g8 estão na mesma diagonal.",
+          "success": "Bc4+! O bispo dá xeque pela diagonal a2–g8. O rei sai e o bispo captura a torre em g8."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-10",
+          "prompt": "As brancas jogam. Espete o rei e a dama.",
+          "fen": "4q3/pp1k1ppp/8/8/8/3B4/PP3PPP/6K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d3b5"
+            ]
+          },
+          "hint": "O rei em d7 e a dama em e8 estão na mesma diagonal. De que casa o bispo dá xeque por ela?",
+          "success": "Bb5+! O bispo dá xeque e, depois que o rei se move, captura a dama em e8. Mesmo que o rei recapture o bispo, as pretas perderam a dama por um bispo."
+        },
+        {
+          "kind": "summary",
+          "points": [
+            "Espeto: ataque uma peça valiosa que tem outra peça atrás, na mesma linha.",
+            "Quando a peça da frente sai, a de trás é capturada.",
+            "Espetos com xeque são os mais eficientes, porque o rei é obrigado a sair.",
+            "Bispos, torres e damas são as peças que dão espetos."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tat-duplo",
+      "title": "Ataques duplos",
+      "minutes": 7,
+      "intro": "Um ataque duplo cria duas ameaças ao mesmo tempo; o adversário só consegue responder a uma delas.",
+      "steps": [
+        {
+          "kind": "text",
+          "title": "Duas ameaças de uma vez",
+          "body": [
+            "O **ataque duplo** é a ideia por trás de quase toda tática: criar **duas ameaças** com um único lance. O garfo é um tipo de ataque duplo, mas as ameaças não precisam ser só capturas.",
+            "Uma das ameaças pode ser **mate**, a captura de uma peça solta, ou a invasão de uma casa importante. O adversário defende uma e perde a outra.",
+            "A **dama** é a peça que mais cria ataques duplos, porque se move em todas as direções. Torres e bispos também fazem isso ao longo das suas linhas."
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Ameaça de mate e ataque a uma torre",
+          "fen": "1r4k1/5ppp/8/8/8/8/1B2QPPP/6K1 w - - 0 1",
+          "caption": "De5! ameaça Dxg7# (apoiada pelo bispo de b2) e ao mesmo tempo ataca a torre em b8. As pretas não conseguem defender as duas coisas.",
+          "arrows": [
+            {
+              "from": "e2",
+              "to": "e5",
+              "color": "green"
+            },
+            {
+              "from": "e5",
+              "to": "g7",
+              "color": "red"
+            },
+            {
+              "from": "e5",
+              "to": "b8",
+              "color": "red"
+            }
+          ],
+          "marks": [
+            {
+              "sq": "g7",
+              "type": "target"
+            },
+            {
+              "sq": "b8",
+              "type": "target"
+            }
+          ]
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-11",
+          "prompt": "As brancas jogam. Ataque duas peças pretas com a dama.",
+          "fen": "r5k1/4pppp/8/4b3/8/7P/P4PP1/3Q2K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d1d5"
+            ]
+          },
+          "hint": "Uma casa central permite à dama atacar a torre em a8 e o bispo em e5 ao mesmo tempo.",
+          "success": "Dd5! A dama ataca a torre em a8 pela diagonal e o bispo em e5 pela fileira. As pretas não conseguem salvar as duas peças."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-12",
+          "prompt": "As brancas jogam. A torre está atacada pelo bispo. Responda com um ataque duplo.",
+          "fen": "8/5ppk/7p/n6b/8/8/5PPP/3R2K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d1d5"
+            ]
+          },
+          "hint": "O cavalo em a5 e o bispo em h5 estão na mesma fileira e nenhum dos dois está protegido.",
+          "success": "Td5! A torre sai do ataque do bispo e ataca o cavalo em a5 e o bispo em h5 ao mesmo tempo. Uma das peças cai."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-13",
+          "prompt": "As brancas jogam. Crie uma ameaça de mate e ataque a torre ao mesmo tempo.",
+          "fen": "1r4k1/5ppp/8/8/8/8/1B2QPPP/6K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "e2e5"
+            ]
+          },
+          "hint": "O bispo de b2 mira g7. Coloque a dama na mesma diagonal, à frente dele.",
+          "success": "De5! Ameaça Dxg7# e ataca a torre em b8 (além de proteger o bispo). Se as pretas defendem o mate com ...f6, a dama captura a torre com xeque."
+        },
+        {
+          "kind": "summary",
+          "points": [
+            "Ataque duplo: um único lance cria duas ameaças.",
+            "As ameaças podem ser capturas, mate ou invasões.",
+            "A dama é a peça que mais cria ataques duplos.",
+            "Peças soltas (sem proteção) são os alvos preferidos de um ataque duplo."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tat-indefesas",
+      "title": "Peças indefesas (contar atacantes e defensores)",
+      "minutes": 9,
+      "intro": "Antes de capturar ou de deixar uma peça onde está, conte quantas vezes ela é atacada e quantas vezes é defendida.",
+      "steps": [
+        {
+          "kind": "text",
+          "title": "Peças soltas caem",
+          "body": [
+            "Uma peça **indefesa** (ou solta) é uma peça sem nenhum defensor. Ela pode ser capturada de graça e é o alvo favorito de garfos e ataques duplos.",
+            "Muitos jogadores perdem partidas simplesmente por não perceber que uma peça ficou sem proteção. Depois de cada lance do adversário, pergunte: **o que ele está atacando?**"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Contando atacantes e defensores",
+          "body": [
+            "Para saber se uma captura funciona, **conte**: quantas peças suas atacam a casa e quantas peças adversárias a defendem.",
+            "Se há **mais atacantes do que defensores**, normalmente você ganha material ao capturar. Se há o mesmo número ou menos, a sequência de trocas costuma terminar mal para quem começou.",
+            "O **valor** das peças também importa: capture primeiro com a peça de **menor valor**. Um peão que toma um cavalo defendido ainda ganha material; uma dama que toma um peão defendido perde a dama."
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Atacantes x defensores",
+          "fen": "4k3/pp3ppp/4p3/3n4/2P5/5B2/PP3PPP/4K3 w - - 0 1",
+          "caption": "O cavalo em d5 é atacado duas vezes (peão c4 e bispo f3) e defendido uma vez (peão e6). Capture primeiro com o peão, a peça de menor valor: cxd5 ganha um cavalo.",
+          "arrows": [
+            {
+              "from": "c4",
+              "to": "d5",
+              "color": "green"
+            },
+            {
+              "from": "f3",
+              "to": "d5",
+              "color": "green"
+            },
+            {
+              "from": "e6",
+              "to": "d5",
+              "color": "red"
+            }
+          ],
+          "marks": [
+            {
+              "sq": "d5",
+              "type": "target"
+            }
+          ]
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-14",
+          "prompt": "As brancas jogam. Uma peça preta está indefesa. Ganhe-a.",
+          "fen": "r2qk2r/pp3ppp/2n5/8/6b1/4B3/PP3PPP/R2Q1RK1 w kq - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d1g4"
+            ]
+          },
+          "hint": "Qual peça preta está atacando a sua dama e não tem nenhum defensor?",
+          "success": "Dxg4! O bispo em g4 atacava a dama, mas estava completamente indefeso. Uma peça solta é uma peça ganha."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-15",
+          "prompt": "As brancas jogam. O cavalo em d5 é atacado duas vezes e defendido só uma. Ganhe-o.",
+          "fen": "3r2k1/pp3ppp/8/3n4/8/2N2B2/PP3PPP/6K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "c3d5",
+              "f3d5"
+            ]
+          },
+          "hint": "Conte: cavalo de c3 e bispo de f3 atacam; só a torre de d8 defende.",
+          "success": "Correto! Com dois atacantes contra um defensor, a captura ganha uma peça: depois de ...Txd5, a outra peça branca recaptura e as brancas ficam com uma peça a mais."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-16",
+          "prompt": "As brancas jogam. Ganhe o cavalo, capturando com a peça certa.",
+          "fen": "4k3/pp3ppp/4p3/3n4/2P5/5B2/PP3PPP/4K3 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "c4d5"
+            ]
+          },
+          "hint": "Capture primeiro com a peça de menor valor.",
+          "success": "cxd5! O peão captura o cavalo. Se ...exd5, o bispo recaptura (Bxd5) e as brancas ganham um cavalo e um peão. Começar com o bispo (Bxd5 exd5) seria apenas uma troca."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-17",
+          "prompt": "As brancas jogam. O cavalo em e5 está atacado e não tem defensor. Coloque-o em uma casa segura.",
+          "fen": "4k3/pp3ppp/3p4/4N3/8/8/PP3PPP/4K3 w - - 0 1",
+          "goal": {
+            "type": "safe",
+            "square": "e5"
+          },
+          "hint": "O peão de d6 ataca o cavalo. Escolha uma casa que nenhuma peça preta ataque.",
+          "success": "Muito bem! Quando uma peça sua é atacada e não tem defensores suficientes, ela precisa sair do lugar (ou ser defendida)."
+        },
+        {
+          "kind": "summary",
+          "points": [
+            "Peça indefesa é peça sem defensor: pode ser capturada de graça.",
+            "Depois de cada lance do adversário, verifique o que ele está atacando.",
+            "Conte atacantes e defensores antes de capturar.",
+            "Comece as capturas com a peça de menor valor."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tat-descoberto",
+      "title": "Ataques descobertos e xeque duplo",
+      "minutes": 10,
+      "intro": "Ao mover uma peça, você pode abrir a linha de outra peça que estava atrás dela: é o ataque descoberto.",
+      "steps": [
+        {
+          "kind": "text",
+          "title": "Ataque descoberto",
+          "body": [
+            "No **ataque descoberto**, uma peça sai da frente de uma peça de longo alcance (bispo, torre ou dama), revelando um ataque. A peça que se move também pode criar uma ameaça: são duas ameaças em um só lance.",
+            "Se o ataque revelado é contra o rei, temos um **xeque descoberto**. A peça que se moveu fica livre para capturar o que quiser, porque o adversário precisa cuidar do xeque.",
+            "No **xeque duplo**, a peça que se move também dá xeque. Duas peças dão xeque ao mesmo tempo, e a **única defesa é mover o rei**: não dá para capturar as duas nem bloquear as duas linhas."
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Xeque descoberto",
+          "fen": "4k3/pp1q1ppp/8/4N3/8/8/PP3PPP/4R1K1 w - - 0 1",
+          "caption": "O cavalo em e5 está na frente da torre de e1. Cxd7+ captura a dama e, ao mesmo tempo, revela o xeque da torre. As pretas não têm tempo de recuperar nada.",
+          "arrows": [
+            {
+              "from": "e5",
+              "to": "d7",
+              "color": "green"
+            },
+            {
+              "from": "e1",
+              "to": "e8",
+              "color": "red"
+            }
+          ],
+          "marks": [
+            {
+              "sq": "d7",
+              "type": "target"
+            }
+          ],
+          "moves": [
+            "e5d7",
+            "e8d7"
+          ]
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-18",
+          "prompt": "As brancas jogam. Com xeque, abra a coluna da torre contra a dama preta.",
+          "fen": "7k/pp2q1pp/8/4N3/8/8/PP3PPP/4R1K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "e5g6"
+            ]
+          },
+          "hint": "O cavalo deve sair da coluna e dando xeque, para que a dama não tenha tempo de fugir.",
+          "success": "Cg6+! O cavalo dá xeque e revela o ataque da torre contra a dama em e7. Depois de ...hxg6, Txe7 ganha a dama."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-19",
+          "prompt": "As brancas jogam. Use o xeque descoberto para ganhar a dama.",
+          "fen": "4k3/pp1q1ppp/8/4N3/8/8/PP3PPP/4R1K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "e5d7"
+            ]
+          },
+          "hint": "Se o cavalo sair da coluna e, a torre dá xeque. Para onde ele deve ir?",
+          "success": "Cxd7+! O cavalo captura a dama e a torre dá xeque descoberto. As pretas perderam a dama por um cavalo."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-20",
+          "prompt": "As brancas jogam. O bispo está na frente da torre. Mova-o com xeque!",
+          "fen": "6k1/pp2qppp/8/8/4B3/8/PP3PPP/4R1K1 w - - 0 1",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "e4h7"
+            ]
+          },
+          "hint": "O bispo precisa sair da coluna e dando xeque ao rei.",
+          "success": "Bxh7+! O bispo dá xeque e revela o ataque da torre contra a dama em e7. Depois que o rei responde ao xeque, Txe7 ganha a dama."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-21",
+          "prompt": "As brancas jogam e dão mate com um xeque duplo.",
+          "fen": "3qkb2/3p1p2/4N3/8/8/8/5PPP/4R1K1 w - - 0 1",
+          "goal": {
+            "type": "mate"
+          },
+          "hint": "Mova o cavalo para uma casa onde ele também dê xeque. A torre fará o outro xeque.",
+          "success": "Xeque duplo e mate! O cavalo e a torre dão xeque ao mesmo tempo. Contra um xeque duplo só o rei pode se mover, e ele não tem nenhuma casa livre."
+        },
+        {
+          "kind": "summary",
+          "points": [
+            "Ataque descoberto: uma peça se move e revela o ataque de outra peça que estava atrás.",
+            "Xeque descoberto: o ataque revelado é contra o rei, e a peça que se moveu fica livre para capturar.",
+            "Xeque duplo: duas peças dão xeque ao mesmo tempo; a única defesa é mover o rei.",
+            "Fique atento a peças suas alinhadas com o rei ou a dama adversária."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tat-mates",
+      "title": "Combinações de mate",
+      "minutes": 12,
+      "intro": "Alguns padrões de mate aparecem o tempo todo; reconhecê-los ajuda tanto a atacar quanto a defender.",
+      "steps": [
+        {
+          "kind": "text",
+          "title": "Mate do corredor",
+          "body": [
+            "O **mate do corredor** (ou mate na última fileira) acontece quando o rei está atrás dos próprios peões, sem casas de fuga, e uma torre ou dama dá xeque na primeira (ou oitava) fileira.",
+            "Para evitá-lo, é comum abrir uma **\"casa de fuga\"** (luft) para o rei, por exemplo avançando o peão h uma casa, ou manter uma peça defendendo a última fileira."
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Mate do corredor",
+          "fen": "2r3k1/5ppp/8/8/8/8/3R1PPP/3R2K1 w - - 0 1",
+          "caption": "A torre preta é a única defensora da oitava fileira. Td8+ força Txd8, e a segunda torre dá mate em d8.",
+          "arrows": [
+            {
+              "from": "d2",
+              "to": "d8",
+              "color": "green"
+            }
+          ],
+          "marks": [
+            {
+              "sq": "g8",
+              "type": "target"
+            }
+          ],
+          "moves": [
+            "d2d8",
+            "c8d8",
+            "d1d8"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Mate do pastor e como evitá-lo",
+          "body": [
+            "O **mate do pastor** é um mate rápido de abertura: a dama e o bispo atacam juntos a casa **f7** (ou f2), que no começo da partida é defendida apenas pelo rei.",
+            "Uma sequência típica é 1.e4 e5 2.Bc4 Cc6 3.Dh5 Cf6?? 4.Dxf7#. Para se defender, basta proteger f7 a tempo, por exemplo com ...De7, ...Df6 ou ...g6 (quando isso não deixar outro peão solto), e depois atacar a dama adversária com o desenvolvimento das peças."
+          ]
+        },
+        {
+          "kind": "board",
+          "title": "Mate do pastor",
+          "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "caption": "Acompanhe os lances: a dama em h5 e o bispo em c4 miram f7. Depois do erro ...Cf6??, Dxf7 é mate.",
+          "moves": [
+            "e2e4",
+            "e7e5",
+            "f1c4",
+            "b8c6",
+            "d1h5",
+            "g8f6",
+            "h5f7"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Mate sufocado e mate com dama e rei",
+          "body": [
+            "No **mate sufocado**, o rei está cercado pelas próprias peças e um **cavalo** dá o xeque. Como nada pode bloquear o xeque de um cavalo, é mate. O padrão clássico usa um sacrifício de dama para obrigar uma peça a fechar a última casa de fuga do rei.",
+            "O **mate com dama e rei** é o final básico que todo jogador precisa saber: a dama empurra o rei adversário até a borda e o rei amigo se aproxima para proteger a dama na hora do mate. Cuidado para não **afogar** o rei adversário, deixando-o sem lances sem estar em xeque."
+          ]
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-22",
+          "prompt": "As brancas jogam e dão mate em 2 lances.",
+          "fen": "2r3k1/5ppp/8/8/8/8/3R1PPP/3R2K1 w - - 0 1",
+          "goal": {
+            "type": "sequence",
+            "moves": [
+              "d2d8",
+              "c8d8",
+              "d1d8"
+            ]
+          },
+          "hint": "O rei preto não tem casa de fuga. Desvie a única peça que defende a oitava fileira.",
+          "success": "Td8+! Txd8 Txd8#. Um mate do corredor clássico: a torre preta foi obrigada a capturar, e a segunda torre branca deu mate na oitava fileira."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-23",
+          "prompt": "As pretas jogam. As brancas ameaçam Dxf7# (e também o peão de e5). Defenda-se.",
+          "fen": "rnbqk1nr/pppp1ppp/8/2b1p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+          "goal": {
+            "type": "moves",
+            "accept": [
+              "d8e7",
+              "d8f6"
+            ]
+          },
+          "hint": "Você precisa proteger f7 sem deixar o peão de e5 cair com xeque.",
+          "success": "Correto! A dama defende f7 e também o peão de e5. Repare que 3...g6? não serve aqui: 4.Dxe5+ ganha um peão com xeque e ataca a torre de h8."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-24",
+          "prompt": "As brancas jogam e dão mate em 2 lances (mate sufocado).",
+          "fen": "r6k/6pp/7N/8/2Q5/8/6PP/6K1 w - - 0 1",
+          "goal": {
+            "type": "sequence",
+            "moves": [
+              "c4g8",
+              "a8g8",
+              "h6f7"
+            ]
+          },
+          "hint": "Sacrifique a dama em uma casa vizinha ao rei, protegida pelo cavalo. A torre será obrigada a capturar.",
+          "success": "Dg8+!! Txg8 Cf7#. O rei preto fica cercado pelas próprias peças e o cavalo dá o mate sufocado."
+        },
+        {
+          "kind": "exercise",
+          "id": "t2-25",
+          "prompt": "As brancas jogam e dão mate com a dama.",
+          "fen": "7k/8/6K1/8/8/8/8/1Q6 w - - 0 1",
+          "goal": {
+            "type": "mate"
+          },
+          "hint": "O rei branco já controla g7 e h7. Dê xeque na última fileira.",
+          "success": "Mate! A dama dá xeque na oitava fileira e o rei branco cobre as casas de fuga g7 e h7."
+        },
+        {
+          "kind": "summary",
+          "points": [
+            "Mate do corredor: o rei preso atrás dos peões é vulnerável na última fileira; abra uma casa de fuga a tempo.",
+            "Mate do pastor: dama e bispo atacam f7; defenda essa casa e desenvolva as peças com ganho de tempo.",
+            "Mate sufocado: o cavalo dá mate num rei cercado pelas próprias peças.",
+            "Dama e rei: empurre o rei para a borda, aproxime o seu rei e evite o afogamento."
+          ]
+        }
+      ]
+    }
+  ]
+}

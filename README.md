@@ -56,11 +56,11 @@ As regras e as avaliações ficam fora dos componentes visuais. A navegação us
 | 2 Fácil | Lia | 10 candidatos, profundidade 4, temperatura 170 |
 | 3 Intermediário | Bruno | 7 candidatos, profundidade 6, temperatura 90 |
 | 4 Avançado | Clara | 5 candidatos, profundidade 9, temperatura 40 |
-| 5 Especialista | Rafael | 3 candidatos, profundidade 13, temperatura 14 |
-| 6 Mestre | Helena | limitador oficial do Stockfish (`UCI_LimitStrength`, `UCI_Elo` 2700), 1 s |
+| 5 Especialista | Rafael | 4 candidatos, profundidade 11, temperatura 22 |
+| 6 Mestre | Helena | 2 candidatos, profundidade 15, temperatura 6 |
 | 7 Força máxima | Stockfish 18 | sem limitação de força, 1,5 s por lance (menos com pouco tempo no relógio) |
 
-Os erros dos bots fracos são sempre lances legais avaliados pelo motor na posição real: quanto menor o nível, maior a perda de avaliação que o bot aceita. A ordem de força é conferida com partidas entre os bots (`npx vite-node scripts/bot-match.ts`). Os ratings mostrados são estimativas aproximadas, não ratings oficiais.
+O limitador oficial do Stockfish (`UCI_Elo`) foi testado, mas nas partidas de calibração jogou abaixo dos níveis limitados por profundidade, por isso não é usado. Os erros dos bots fracos são sempre lances legais avaliados pelo motor na posição real: quanto menor o nível, maior a perda de avaliação que o bot aceita. A ordem de força é conferida com partidas entre os bots (`npx vite-node scripts/bot-match.ts`). Os ratings mostrados são estimativas aproximadas, não ratings oficiais.
 
 ## Análise e revisão
 

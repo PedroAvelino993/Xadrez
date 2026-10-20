@@ -1,9 +1,10 @@
 // Bot opponents. Every move comes from a Stockfish search of the real position:
-//  - levels 1–5 ask for several candidate moves (MultiPV) at a limited depth
+//  - levels 1–6 ask for several candidate moves (MultiPV) at a limited depth
 //    and pick one with a softmax over their evaluations ("temperature"):
 //    weaker bots search shallower and accept bigger evaluation losses, so
 //    their mistakes are plausible, legal moves rather than random ones;
-//  - level 6 uses Stockfish's own strength limiter (UCI_LimitStrength/UCI_Elo);
+//    (Stockfish's own UCI_Elo limiter is supported by the engine wrapper, but
+//    in our matches it played below the depth-limited levels, so it is unused);
 //  - level 7 is the engine without artificial limits (only a time budget).
 // The ordering of the levels is checked with bot-vs-bot matches
 // (scripts/bot-match.ts). Ratings are rough estimates, not official ratings.
@@ -93,7 +94,7 @@ export const BOTS: Bot[] = [
     style: "Tático e agressivo",
     description: "Calcula combinações com cuidado e explora fraquezas no rei. Raramente erra feio.",
     minThinkMs: 600,
-    policy: { kind: "softmax", depth: 13, multipv: 3, temperature: 14 },
+    policy: { kind: "softmax", depth: 11, multipv: 4, temperature: 22 },
   },
   {
     id: "helena",
@@ -104,9 +105,9 @@ export const BOTS: Bot[] = [
     piece: "k",
     color: "#c95a6b",
     style: "Técnica de mestre",
-    description: "Converte vantagens com precisão e defende bem. Usa o limitador de força do próprio Stockfish.",
+    description: "Converte vantagens com precisão e defende bem. Calcula fundo e quase não erra.",
     minThinkMs: 500,
-    policy: { kind: "elo", elo: 2700, movetime: 1000 },
+    policy: { kind: "softmax", depth: 15, multipv: 2, temperature: 6 },
   },
   {
     id: "stockfish",
