@@ -1,11 +1,12 @@
 // Bot opponents. Every move comes from a Stockfish search of the real position:
-//  - levels 1–3 ask for several candidate moves (MultiPV) at low depth and
-//    pick one with a softmax over their evaluations ("temperature"): weaker
-//    bots accept bigger evaluation losses, so their mistakes are plausible,
-//    legal moves rather than random ones;
-//  - levels 4–6 use Stockfish's own strength limiter (UCI_LimitStrength/UCI_Elo);
+//  - levels 1–5 ask for several candidate moves (MultiPV) at a limited depth
+//    and pick one with a softmax over their evaluations ("temperature"):
+//    weaker bots search shallower and accept bigger evaluation losses, so
+//    their mistakes are plausible, legal moves rather than random ones;
+//  - level 6 uses Stockfish's own strength limiter (UCI_LimitStrength/UCI_Elo);
 //  - level 7 is the engine without artificial limits (only a time budget).
-// Ratings are estimates for orientation only, not official ratings.
+// The ordering of the levels is checked with bot-vs-bot matches
+// (scripts/bot-match.ts). Ratings are rough estimates, not official ratings.
 import type { Color, PieceType } from "../types";
 import type { Engine, SearchOptions } from "../engine/stockfish";
 import { scoreCp } from "../engine/score";
@@ -40,7 +41,7 @@ export const BOTS: Bot[] = [
     style: "Aprendendo as regras",
     description: "Conhece os movimentos, mas ainda deixa peças sem defesa e quase não percebe ameaças. Ótimo para os primeiros jogos.",
     minThinkMs: 650,
-    policy: { kind: "softmax", depth: 3, multipv: 12, temperature: 260 },
+    policy: { kind: "softmax", depth: 2, multipv: 12, temperature: 320 },
   },
   {
     id: "lia",
@@ -53,7 +54,7 @@ export const BOTS: Bot[] = [
     style: "Ataques simples",
     description: "Gosta de atacar e captura peças soltas, mas ainda comete erros táticos de vez em quando.",
     minThinkMs: 650,
-    policy: { kind: "softmax", depth: 5, multipv: 8, temperature: 120 },
+    policy: { kind: "softmax", depth: 4, multipv: 10, temperature: 170 },
   },
   {
     id: "bruno",
@@ -66,7 +67,7 @@ export const BOTS: Bot[] = [
     style: "Jogo equilibrado",
     description: "Desenvolve as peças, faz roque e aproveita erros grosseiros. Comete imprecisões em posições complicadas.",
     minThinkMs: 700,
-    policy: { kind: "softmax", depth: 8, multipv: 5, temperature: 45 },
+    policy: { kind: "softmax", depth: 6, multipv: 7, temperature: 90 },
   },
   {
     id: "clara",
@@ -77,9 +78,9 @@ export const BOTS: Bot[] = [
     piece: "r",
     color: "#a07ac9",
     style: "Posicional e paciente",
-    description: "Joga com planos claros e pune descuidos. Usa o limitador de força do Stockfish (Elo ≈ 1500).",
+    description: "Joga com planos claros e pune descuidos, mas ainda deixa escapar algumas oportunidades.",
     minThinkMs: 700,
-    policy: { kind: "elo", elo: 1500, movetime: 500 },
+    policy: { kind: "softmax", depth: 9, multipv: 5, temperature: 40 },
   },
   {
     id: "rafael",
@@ -90,9 +91,9 @@ export const BOTS: Bot[] = [
     piece: "q",
     color: "#c98a5a",
     style: "Tático e agressivo",
-    description: "Calcula combinações e explora fraquezas no rei. Stockfish limitado a Elo ≈ 1900.",
+    description: "Calcula combinações com cuidado e explora fraquezas no rei. Raramente erra feio.",
     minThinkMs: 600,
-    policy: { kind: "elo", elo: 1900, movetime: 800 },
+    policy: { kind: "softmax", depth: 13, multipv: 3, temperature: 14 },
   },
   {
     id: "helena",
@@ -103,9 +104,9 @@ export const BOTS: Bot[] = [
     piece: "k",
     color: "#c95a6b",
     style: "Técnica de mestre",
-    description: "Converte vantagens com precisão e defende bem. Stockfish limitado a Elo ≈ 2300.",
+    description: "Converte vantagens com precisão e defende bem. Usa o limitador de força do próprio Stockfish.",
     minThinkMs: 500,
-    policy: { kind: "elo", elo: 2300, movetime: 1200 },
+    policy: { kind: "elo", elo: 2700, movetime: 1000 },
   },
   {
     id: "stockfish",

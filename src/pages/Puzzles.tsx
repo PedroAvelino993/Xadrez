@@ -396,7 +396,7 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
 
   const done = status === "solved" || status === "revealed";
   const sideName = solverColor === "w" ? "Brancas" : "Pretas";
-  const goalText = puzzle.goal === "draw" ? "Encontre o lance que garante o empate" : puzzle.themes.some((t) => t.startsWith("mateIn")) ? `Dê mate em ${puzzle.themes.find((t) => t.startsWith("mateIn"))!.slice(-1)}` : puzzle.themes.includes("defense") ? "Encontre o único lance que salva a posição" : "Encontre o melhor lance";
+  const goalText = puzzle.goal === "draw" ? "Encontre o único lance que garante o empate" : puzzle.goal === "win" ? "Encontre o único lance que vence" : puzzle.themes.some((t) => t.startsWith("mateIn")) ? `Dê mate em ${puzzle.themes.find((t) => t.startsWith("mateIn"))!.slice(-1)}` : puzzle.themes.includes("defense") ? "Encontre o único lance que salva a posição" : "Encontre o melhor lance";
   const solutionSans = useMemo(() => {
     const c = new Chess(startFen);
     return puzzle.moves.map((u) => {
