@@ -16,7 +16,7 @@
 }
 .board-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .board-row { display: flex; gap: 10px; align-items: stretch; }
-.board-row > .board-holder { flex: 0 1 var(--board-size); min-width: 0; }
+.board-row > .board-holder { width: var(--board-size); flex: 0 1 auto; min-width: 0; }
 .side-panel { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .side-panel .card { overflow: hidden; }
 @media (max-width: 1100px) {
