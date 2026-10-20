@@ -1,0 +1,147 @@
+/* Design tokens — Lance Certo
+   Dark graphite with a discreet green cast is the default; a light theme is
+   available in Configurações. Semantic colours: green = positive/selection,
+   red = errors, yellow = warnings/important. */
+:root {
+  --bg: #15181a;
+  --bg-elev: #1b1f22;
+  --surface-1: #1f2427;
+  --surface-2: #262c30;
+  --surface-3: #2f363b;
+  --surface-hover: #353d43;
+  --border: #323a40;
+  --border-strong: #434d54;
+  --text: #e9ecee;
+  --text-2: #b4bcc2;
+  --text-3: #858f96;
+  --accent: #5fae55;
+  --accent-strong: #4f9d4a;
+  --accent-soft: rgba(95, 174, 85, 0.16);
+  --accent-text: #8fd384;
+  --danger: #e25a52;
+  --danger-soft: rgba(226, 90, 82, 0.15);
+  --warning: #e9b949;
+  --warning-soft: rgba(233, 185, 73, 0.15);
+  --info: #5b9bd5;
+  --info-soft: rgba(91, 155, 213, 0.15);
+
+  /* move classification */
+  --c-best: #6cbf4f;
+  --c-excellent: #8fcb5b;
+  --c-good: #97ad8a;
+  --c-book: #a88865;
+  --c-inaccuracy: #e9b949;
+  --c-mistake: #ea8a3a;
+  --c-blunder: #e25a52;
+  --c-forced: #8796a3;
+
+  --radius-s: 6px;
+  --radius: 10px;
+  --radius-l: 14px;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 6px 24px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 18px 48px rgba(0, 0, 0, 0.5);
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-fast: 120ms;
+  --t: 200ms;
+  --sidebar-w: 224px;
+  --topbar-h: 56px;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #eef0ee;
+  --bg-elev: #f6f7f6;
+  --surface-1: #ffffff;
+  --surface-2: #f3f5f3;
+  --surface-3: #e7ebe8;
+  --surface-hover: #dfe5e1;
+  --border: #dde2de;
+  --border-strong: #c6cec8;
+  --text: #1b2023;
+  --text-2: #444e54;
+  --text-3: #6d777d;
+  --accent: #3f8f3a;
+  --accent-strong: #367c32;
+  --accent-soft: rgba(63, 143, 58, 0.12);
+  --accent-text: #2f7a2b;
+  --danger: #c9433b;
+  --danger-soft: rgba(201, 67, 59, 0.1);
+  --warning: #b7860f;
+  --warning-soft: rgba(201, 150, 20, 0.12);
+  --info: #2f74b5;
+  --info-soft: rgba(47, 116, 181, 0.1);
+  --shadow-1: 0 1px 2px rgba(20, 30, 25, 0.08);
+  --shadow-2: 0 6px 24px rgba(20, 30, 25, 0.1);
+  --shadow-3: 0 18px 48px rgba(20, 30, 25, 0.18);
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+h1 { font-size: 1.6rem; font-weight: 700; }
+h2 { font-size: 1.2rem; font-weight: 650; }
+h3 { font-size: 1rem; font-weight: 650; }
+p { margin: 0; }
+
+a { color: var(--accent-text); }
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection { background: var(--accent-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  animation-duration: 1ms !important;
+  transition-duration: 1ms !important;
+}

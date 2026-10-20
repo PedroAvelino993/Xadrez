@@ -1,0 +1,8 @@
+.acc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.acc { background: var(--surface-2); border-radius: var(--radius); padding: 12px 8px; text-align: center; }
+.acc-num { font-size: 2rem; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; margin-top: 4px; }
+.acc.w .acc-num { color: var(--text); }
+.class-table td, .class-table th { padding: 5px 8px; }
+.moments { display: flex; flex-direction: column; gap: 6px; }
+.moment { display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 9px 10px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface-2); cursor: pointer; transition: background var(--t-fast); }
+.moment:hover { background: var(--surface-3); }
