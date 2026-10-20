@@ -231,11 +231,11 @@ function estimateRating(p, a, engineLevel) {
   return Math.round(Math.max(400, Math.min(2600, r)) / 10) * 10;
 }
 
-const files = fs.readdirSync(new URL("../data/", import.meta.url)).filter((f) => /^(raw|end)-.*\.jsonl$/.test(f));
+const files = fs.readdirSync(new URL("../data/puzzles-raw/", import.meta.url)).filter((f) => /^(raw|end)-.*\.jsonl$/.test(f));
 const seen = new Set();
 const out = [];
 for (const f of files) {
-  for (const line of fs.readFileSync(new URL(`../data/${f}`, import.meta.url), "utf8").trim().split("\n")) {
+  for (const line of fs.readFileSync(new URL(`../data/puzzles-raw/${f}`, import.meta.url), "utf8").trim().split("\n")) {
     if (!line) continue;
     const p = JSON.parse(line);
     const key = p.fen.split(" ").slice(0, 4).join(" ") + p.moves.join("");
@@ -261,7 +261,7 @@ for (const f of files) {
 }
 out.sort((x, y) => x.rating - y.rating || x.fen.localeCompare(y.fen));
 out.forEach((p, i) => (p.id = "p" + String(i + 1).padStart(4, "0")));
-fs.writeFileSync(process.argv[2] ?? new URL("../data/puzzles.json", import.meta.url), JSON.stringify(out));
+fs.writeFileSync(process.argv[2] ?? new URL("../src/puzzles/puzzles.json", import.meta.url), JSON.stringify(out));
 const tally = {};
 for (const p of out) for (const t of p.themes) tally[t] = (tally[t] ?? 0) + 1;
 console.log(out.length, "puzzles", tally);

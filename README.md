@@ -60,7 +60,7 @@ As regras e as avaliações ficam fora dos componentes visuais. A navegação us
 | 6 Mestre | Helena | 2 candidatos, profundidade 15, temperatura 6 |
 | 7 Força máxima | Stockfish 18 | sem limitação de força, 1,5 s por lance (menos com pouco tempo no relógio) |
 
-O limitador oficial do Stockfish (`UCI_Elo`) foi testado, mas nas partidas de calibração jogou abaixo dos níveis limitados por profundidade, por isso não é usado. Os erros dos bots fracos são sempre lances legais avaliados pelo motor na posição real: quanto menor o nível, maior a perda de avaliação que o bot aceita. A ordem de força é conferida com partidas entre os bots (`npx vite-node scripts/bot-match.ts`). Os ratings mostrados são estimativas aproximadas, não ratings oficiais.
+O limitador oficial do Stockfish (`UCI_Elo`) foi testado, mas nas partidas de calibração jogou abaixo dos níveis limitados por profundidade, por isso não é usado. Os erros dos bots fracos são sempre lances legais avaliados pelo motor na posição real: quanto menor o nível, maior a perda de avaliação que o bot aceita. A ordem de força é conferida com partidas entre níveis vizinhos (`npx vite-node scripts/bot-match.ts`, mesmo código e mesmo motor WASM do app). Resultado da última calibração, 4 partidas por confronto, com cores alternadas: Lia 4–0 Pipo, Bruno 3,5–0,5 Lia, Clara 4–0 Bruno, Rafael 4–0 Clara, Helena 3,5–0,5 Rafael, Stockfish 3,5–0,5 Helena. Os ratings mostrados são estimativas aproximadas, não ratings oficiais.
 
 ## Análise e revisão
 
@@ -77,11 +77,17 @@ Gerados e verificados com o Stockfish, sem nenhuma posição escrita à mão:
 2. `scripts/endgames.mjs`: finais aleatórios de peões e de torres em que exatamente um lance vence (ou exatamente um lance empata), verificados com 6 milhões de nós.
 3. `scripts/tag.mjs`: detecta os temas na própria linha da solução (garfo, cravada, espeto, ataque descoberto, desvio, sobrecarga, sacrifício, mates…), escreve a explicação da ideia e estima a dificuldade.
 
+Conjunto atual: **501 puzzles**:
+- por tipo: peça indefesa 167, ganho de material 134, táticas defensivas 63, finais de peões 52, finais de torres 38, mate 32 (mate em 1: 25; mate em 2: 5; mate em 3: 2), ataque duplo 27, combinações avançadas 25, garfo 18, sacrifício 15;
+- temas raros: desvio 9, sobrecarga 4, ataque descoberto 3, espeto 2, cravada 2.
+
+Os dados brutos ficam em `data/puzzles-raw/`, e `node scripts/tag.mjs` regenera `src/puzzles/puzzles.json`.
+
 No aplicativo, a resposta é conferida com a solução. No lance final de um puzzle de mate, qualquer mate é aceito. Errar não encerra o puzzle: o lance é desfeito e dá para tentar de novo. A pontuação de puzzles (estilo Elo) é separada de qualquer desempenho em partidas, e os pontos premiam acerto e constância, não velocidade.
 
 ## Lições e biblioteca de posições
 
-5 módulos (Fundamentos, Tática, Estratégia, Aberturas, Finais) em `src/lessons/data/*.json`. Os objetivos dos exercícios são conferidos pelas regras: "dê mate" aceita qualquer mate, "faça o roque" exige roque etc. Respostas exatas são verificadas pelo Stockfish com `node scripts/verify-lessons.mjs` (precisa do Stockfish nativo em `/usr/games/stockfish`). Esse script também recusa exercícios em que outro lance é quase tão bom quanto o esperado.
+5 módulos (Fundamentos, Tática, Estratégia, Aberturas, Finais), com **37 lições e 128 exercícios**, em `src/lessons/data/*.json`. A biblioteca de posições tem 32 posições (famosas, táticas, estratégicas e finais), em `src/positions/library.json`. Os objetivos dos exercícios são conferidos pelas regras: "dê mate" aceita qualquer mate, "faça o roque" exige roque etc. Respostas exatas são verificadas pelo Stockfish com `node scripts/verify-lessons.mjs` (precisa do Stockfish nativo em `/usr/games/stockfish`). Esse script também recusa exercícios em que outro lance é quase tão bom quanto o esperado.
 
 ## Aberturas
 
@@ -112,7 +118,7 @@ Biblioteca de aberturas do Lichess ([lichess-org/chess-openings](https://github.
 
 - O motor do navegador é o Stockfish 18 *lite* single-thread: mais fraco que o Stockfish completo (ainda muito acima de qualquer humano) e mais lento em celulares antigos. A revisão a profundidade 14 leva de alguns segundos a um minuto, conforme a partida e o aparelho.
 - Os ratings dos bots, a precisão e a pontuação de puzzles são estimativas próprias, não comparáveis diretamente com outros sites.
-- O banco de puzzles é próprio e menor que o de grandes sites. Alguns temas têm poucos exemplos, e a distribuição depende do que o motor encontrou.
+- O banco de puzzles é próprio (501) e muito menor que o de grandes sites. Cravada, espeto, ataque descoberto e mate em 2–3 têm poucos exemplos: o gerador exige solução única em todos os passos, e nesses padrões costuma haver mais de uma. Para ampliar, basta rodar `scripts/mine.mjs` por mais tempo e regenerar.
 - O explorador de aberturas não tem estatísticas de partidas (não há base de partidas licenciada no projeto).
 - Os dados ficam só no navegador: limpar os dados do site apaga o progresso (use o backup).
 - Sem contas nem multijogador online.

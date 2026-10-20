@@ -7,7 +7,7 @@ import { Engine, toCp, winPctScore } from "./uci.mjs";
 
 const type = process.argv[2] ?? "pawn"; // pawn | rook
 const target = +(process.argv[3] ?? 40);
-const out = fs.createWriteStream(new URL(`../data/end-${type}-${process.pid}.jsonl`, import.meta.url), { flags: "a" });
+const out = fs.createWriteStream(new URL(`../data/puzzles-raw/end-${type}-${process.pid}.jsonl`, import.meta.url), { flags: "a" });
 const e = new Engine();
 await e.init();
 const NODES = 6000000;

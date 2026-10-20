@@ -8,10 +8,10 @@ import { Engine, toCp, winPctScore } from "./uci.mjs";
 
 const id = process.argv[2] ?? "0";
 const target = +(process.argv[3] ?? 200);
-const out = fs.createWriteStream(new URL(`../data/raw-${id}.jsonl`, import.meta.url), { flags: "a" });
+const out = fs.createWriteStream(new URL(`../data/puzzles-raw/raw-${id}.jsonl`, import.meta.url), { flags: "a" });
 
 const openings = ["a", "b", "c", "d", "e"].flatMap((f) =>
-  fs.readFileSync(new URL(`../data/${f}.tsv`, import.meta.url), "utf8").trim().split("\n").slice(1).map((l) => l.split("\t")[2])
+  fs.readFileSync(new URL(`../data/openings/${f}.tsv`, import.meta.url), "utf8").trim().split("\n").slice(1).map((l) => l.split("\t")[2])
 );
 
 const VAL = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
