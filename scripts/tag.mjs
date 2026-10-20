@@ -85,7 +85,10 @@ function analyse(p) {
       const tg = targetsOf(b, m.to);
       if (tg.length >= 2) {
         const cap = later(k).find((x) => x.captured && x.from === m.to);
-        if (cap || (k === all.length - 1 && false)) {
+        // the follow-up capture may lie beyond the verified line: accept a final
+        // forking move when the engine confirmed a decisive result (finalCp)
+        const decisiveEnd = k === all.length - 1 && (p.finalCp ?? 0) >= 300 && tg.some((t) => t.type === "k" || t.type === "q" || t.type === "r");
+        if (cap || decisiveEnd) {
           themes.add(m.piece === "q" ? "doubleAttack" : "fork");
           if (m.piece !== "q") themes.add("doubleAttack");
           ideas.push(`${m.san} ataca ${tg.slice(0, 2).map((t) => `${NAME[t.type]} em ${t.square}`).join(" e ")} ao mesmo tempo.`);
