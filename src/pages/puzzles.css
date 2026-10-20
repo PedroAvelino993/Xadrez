@@ -1,15 +1,6 @@
 .pz-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
 .pz-stat { display: flex; gap: 10px; align-items: center; padding: 12px 14px; }
 .pz-stat b { font-size: 1.15rem; }
-.mode-card { display: flex; gap: 14px; align-items: center; text-align: left; cursor: pointer; transition: border-color var(--t-fast), transform var(--t-fast); color: var(--text); }
-.mode-card:hover { border-color: var(--accent); transform: translateY(-1px); }
-.mode-card > div:nth-child(2) { flex: 1; }
-.mode-card .go { color: var(--text-3); }
-.mode-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; flex: none; }
-.mode-icon.green { background: var(--accent-soft); color: var(--accent-text); }
-.mode-icon.yellow { background: var(--warning-soft); color: var(--warning); }
-.mode-icon.blue { background: var(--info-soft); color: var(--info); }
-.mode-icon.red { background: var(--danger-soft); color: var(--danger); }
 .diff-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
 @media (max-width: 1000px) { .diff-row { grid-template-columns: repeat(2, 1fr); } }
 .diff-card { display: flex; flex-direction: column; gap: 4px; padding: 14px; text-align: left; cursor: pointer; color: var(--text); transition: border-color var(--t-fast); }

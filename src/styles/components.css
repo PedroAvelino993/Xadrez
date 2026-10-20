@@ -191,3 +191,14 @@
 .engine-opts { padding: 8px 12px; border-top: 1px solid var(--border); gap: 10px; flex-wrap: wrap; }
 .sm-select { width: auto; padding: 3px 6px; font-size: 0.8rem; }
 .tip { display: flex; gap: 6px; align-items: flex-start; padding: 0 4px; }
+
+/* ---------- Mode cards (shared) ---------- */
+.mode-card { display: flex; gap: 14px; align-items: center; text-align: left; cursor: pointer; transition: border-color var(--t-fast), transform var(--t-fast); color: var(--text); }
+.mode-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.mode-card > div:nth-child(2) { flex: 1; }
+.mode-card .go { color: var(--text-3); }
+.mode-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; flex: none; }
+.mode-icon.green { background: var(--accent-soft); color: var(--accent-text); }
+.mode-icon.yellow { background: var(--warning-soft); color: var(--warning); }
+.mode-icon.blue { background: var(--info-soft); color: var(--info); }
+.mode-icon.red { background: var(--danger-soft); color: var(--danger); }

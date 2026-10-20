@@ -1,0 +1,16 @@
+.opening-name { font-size: 1.05rem; margin-top: 2px; }
+.next-moves { border-bottom: 1px solid var(--border); max-height: 260px; overflow-y: auto; }
+.next-head { display: flex; justify-content: space-between; padding: 8px 14px 4px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
+.next-move { display: grid; grid-template-columns: 74px 1fr auto; gap: 8px; align-items: center; width: 100%; padding: 7px 14px; border: 0; background: transparent; text-align: left; cursor: pointer; font-size: 0.88rem; }
+.next-move:hover { background: var(--surface-2); }
+.nm-name { color: var(--text-2); font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nm-count { font-variant-numeric: tabular-nums; color: var(--text-3); font-size: 0.8rem; }
+.quick-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip.quick { border: 1px solid var(--border); cursor: pointer; padding: 5px 11px; font-size: 0.8rem; }
+.chip.quick:hover { border-color: var(--accent); color: var(--text); }
+.search { gap: 8px; }
+.search-results { display: flex; flex-direction: column; max-height: 300px; overflow-y: auto; gap: 2px; }
+.search-item { display: flex; gap: 10px; align-items: center; text-align: left; padding: 7px 8px; border: 0; background: transparent; border-radius: 6px; cursor: pointer; font-size: 0.88rem; }
+.search-item:hover { background: var(--surface-2); }
+.link-btn { border: 0; background: none; text-align: left; cursor: pointer; padding: 4px 0; color: var(--text); min-width: 0; }
+.link-btn:hover b { color: var(--accent-text); }
