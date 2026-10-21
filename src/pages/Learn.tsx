@@ -3,6 +3,7 @@ import { Chess } from "chess.js";
 import { ArrowLeft, ArrowRight, BookOpenCheck, CheckCircle2, ChevronLeft, ChevronRight, Clock, GraduationCap, RotateCcw, Sparkles } from "lucide-react";
 import Board from "../components/Board";
 import ExerciseBoard from "../components/ExerciseBoard";
+import { decideGoalForObjective } from "../puzzles/convert";
 import type { Lesson, Module, Step } from "../lessons/types";
 import { setState, useAppState } from "../storage/store";
 import { navigate } from "../hooks/useRoute";
@@ -169,7 +170,7 @@ function LessonView({ module, lesson, next, prev }: { module: Module; lesson: Le
       </div>
 
       <div key={i} className="step-wrap">
-        <StepView step={step} solved={step.kind === "exercise" ? !!exercises[step.id] : false} />
+        <StepView step={step} moduleId={module.id} solved={step.kind === "exercise" ? !!exercises[step.id] : false} />
       </div>
 
       <div className="lesson-nav">
@@ -202,7 +203,7 @@ function rich(t: string) {
   return parts.map((p, i) => (p.startsWith("**") ? <b key={i}>{p.slice(2, -2)}</b> : <span key={i}>{p}</span>));
 }
 
-function StepView({ step, solved }: { step: Step; solved: boolean }) {
+function StepView({ step, solved, moduleId }: { step: Step; solved: boolean; moduleId: string }) {
   if (step.kind === "text")
     return (
       <div className="card pad lesson-text">
@@ -240,6 +241,19 @@ function StepView({ step, solved }: { step: Step; solved: boolean }) {
         marks={step.marks}
         solved={solved}
         onSolved={() => setState((s) => ({ ...s, lessons: { ...s.lessons, exercises: { ...s.lessons.exercises, [step.id]: true } } }))}
+        convert={
+          // engine-verified exercises in the tactics and endgame modules continue until the idea is completed
+          (step.goal.type === "moves" || step.goal.type === "sequence") && (moduleId === "finais" || moduleId === "tatica")
+            ? (fenAfter, view) => {
+                const side = step.fen.split(" ")[1] === "b" ? "b" : "w";
+                if (moduleId !== "finais") return decideGoalForObjective(step.prompt, false, fenAfter, side, view.score);
+                // endgame lessons: defend → hold the draw; otherwise, if the engine says it is won, play it out
+                const o = step.prompt.toLowerCase();
+                if (o.includes("empat") || o.includes("defend")) return decideGoalForObjective("empatam", true, fenAfter, side, view.score);
+                return decideGoalForObjective("vencem", true, fenAfter, side, view.score);
+              }
+            : undefined
+        }
       />
     </div>
   );

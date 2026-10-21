@@ -83,6 +83,13 @@ Conjunto atual: **501 puzzles**:
 
 Os dados brutos ficam em `data/puzzles-raw/`, e `node scripts/tag.mjs` regenera `src/puzzles/puzzles.json`.
 
+**Fase de conversão** (`src/puzzles/convert.ts`): quando termina a parte de solução única, o jogo continua contra o Stockfish até a ideia se completar:
+- finais vencedores: até promover ou dar mate;
+- táticas: até a vantagem ficar decisiva (≥ +5 ou mate); se já estiver decisiva, o puzzle termina ali;
+- puzzles de empate: segurar o empate por alguns lances.
+
+Nessa fase há vários lances bons, então o motor aceita qualquer lance que mantenha a vantagem: no máximo 10 pontos de chance de vitória perdidos, e a posição precisa continuar claramente ganha. O mesmo vale para as posições da biblioteca e para os exercícios de tática e de finais das lições, conforme o objetivo de cada um ("vencem", "empatam", "dão mate").
+
 No aplicativo, a resposta é conferida com a solução. No lance final de um puzzle de mate, qualquer mate é aceito. Errar não encerra o puzzle: o lance é desfeito e dá para tentar de novo. A pontuação de puzzles (estilo Elo) é separada de qualquer desempenho em partidas, e os pontos premiam acerto e constância, não velocidade.
 
 ## Lições e biblioteca de posições

@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, CalendarDays, CheckCircle2, Eye, Flame, Lightbulb, RotateCcw, Target, Trophy, XCircle, Shuffle, SlidersHorizontal, ArrowLeft } from "lucide-react";
 import Board, { type Arrow, type BoardMove } from "../components/Board";
 import { PieceIcon } from "../components/ui";
-import { parseUci, toRecord } from "../chess/rules";
+import { buildPgn, parseUci, toRecord } from "../chess/rules";
+import { decideGoal, goalText as convertGoalText, solverCp } from "../puzzles/convert";
+import { useConversion } from "../puzzles/useConversion";
+import { formatScore } from "../engine/score";
 import type { Color } from "../types";
 import { DIFFICULTIES, THEMES, dailyIds, isCorrect, loadPuzzles, pickNext, pointsFor, themeLabel, updateRating, type Puzzle } from "../puzzles/logic";
 import { getState, setState, todayKey, useAppState } from "../storage/store";
@@ -163,7 +166,7 @@ function Stat({ icon, label, value, hint }: { icon: React.ReactNode; label: stri
 
 // ---------------------------------------------------------------------------
 
-type Status = "intro" | "your-turn" | "wrong" | "solved" | "revealed";
+type Status = "intro" | "your-turn" | "wrong" | "solved" | "revealed" | "convert-wait" | "convert-turn" | "convert-wrong" | "converted";
 
 function PuzzleRunner({ all, mode, arg, query }: { all: Puzzle[]; mode: string; arg?: string; query: URLSearchParams }) {
   const pzState = useAppState((s) => s.puzzles);
@@ -233,6 +236,9 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
   const [hints, setHints] = useState(0);
   const [showIdea, setShowIdea] = useState(false);
   const [arrows, setArrows] = useState<Arrow[]>([]);
+  const played = useRef<string[]>([]);
+  const cv = useConversion({ solver: solverColor, setFen, setLast, setMarks, onPlayed: (u) => played.current.push(u) });
+  const conv = cv.conv;
   const t0 = useRef(performance.now());
   const recorded = useRef(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -243,6 +249,7 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
     (fenNow: string, i: number) => {
       const c = new Chess(fenNow);
       const m = c.move(parseUci(puzzle.moves[i]));
+      played.current.push(puzzle.moves[i]);
       playForSan(m.san, !!m.promotion);
       setFen(c.fen());
       setLast({ from: m.from, to: m.to });
@@ -308,7 +315,27 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
     });
   };
 
+  const startConversion = async (fenAfterLine: string) => {
+    setStatus("convert-wait");
+    const started = await cv.start(fenAfterLine, (view) => decideGoal(puzzle, fenAfterLine, solverColor, view.score));
+    if (!started) setStatus("solved");
+  };
+  const finishConversion = (o: "skipped") => cv.finish(o);
+  const convertHint = cv.hint;
+  const convertPlayEngine = cv.playEngine;
+
   const onMove = (m: BoardMove) => {
+    if (status === "convert-turn") {
+      const c = new Chess(fen);
+      let mv;
+      try {
+        mv = c.move(m);
+      } catch {
+        return false;
+      }
+      void cv.move(c, mv);
+      return true;
+    }
     if (status !== "your-turn") return false;
     const c = new Chess(fen);
     let mv;
@@ -319,6 +346,7 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
     }
     const uci = mv.from + mv.to + (mv.promotion ?? "");
     if (isCorrect(puzzle, idx, uci, c.isCheckmate())) {
+      played.current.push(uci);
       playForSan(mv.san, !!mv.promotion);
       setFen(c.fen());
       setLast({ from: mv.from, to: mv.to });
@@ -326,9 +354,10 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
       setArrows([]);
       const next = idx + 1;
       if (next >= puzzle.moves.length) {
-        setStatus("solved");
         play("correct");
         record(true, mistakes === 0 && hints === 0);
+        if (c.isGameOver()) setStatus("solved");
+        else void startConversion(c.fen());
         return true;
       }
       setIdx(next + 1);
@@ -379,6 +408,8 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
   const retry = () => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
+    cv.reset();
+    played.current = [];
     setFen(startFen);
     setIdx(0);
     setMarks({});
@@ -394,7 +425,15 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
       }, 500);
   };
 
-  const done = status === "solved" || status === "revealed";
+  // while converting, the hook owns the phase
+  useEffect(() => {
+    const map = { wait: "convert-wait", turn: "convert-turn", wrong: "convert-wrong", done: "converted" } as const;
+    if (cv.phase !== "idle") setStatus(map[cv.phase]);
+  }, [cv.phase]);
+  const { sync } = cv;
+  useEffect(() => sync(fen), [fen, sync]);
+  const done = status === "solved" || status === "revealed" || status === "converted";
+  const converting = status === "convert-turn" || status === "convert-wait" || status === "convert-wrong";
   const sideName = solverColor === "w" ? "Brancas" : "Pretas";
   const goalText = puzzle.goal === "draw" ? "Encontre o único lance que garante o empate" : puzzle.goal === "win" ? "Encontre o único lance que vence" : puzzle.themes.some((t) => t.startsWith("mateIn")) ? `Dê mate em ${puzzle.themes.find((t) => t.startsWith("mateIn"))!.slice(-1)}` : puzzle.themes.includes("defense") ? "Encontre o único lance que salva a posição" : "Encontre o melhor lance";
   const solutionSans = useMemo(() => {
@@ -414,7 +453,7 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
         <div className="board-col sticky-m">
           <div className="board-row">
             <div className="board-holder">
-              <Board fen={fen} orientation={solverColor} movable={status === "your-turn" ? solverColor : "none"} onMove={onMove} lastMove={last} marks={marks} arrows={arrows} mated={new Chess(fen).isCheckmate()} />
+              <Board fen={fen} orientation={solverColor} movable={status === "your-turn" || status === "convert-turn" ? solverColor : "none"} onMove={onMove} lastMove={last} marks={marks} arrows={arrows} mated={new Chess(fen).isCheckmate()} />
             </div>
           </div>
         </div>
@@ -472,6 +511,43 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
                   <p>Certo! Continue a sequência.</p>
                 </div>
               )}
+              {converting && conv && (
+                <div className="feedback info">
+                  <CheckCircle2 size={20} color="var(--accent)" />
+                  <div>
+                    <h3>
+                      Parte principal resolvida! {conv.goal === "promote" ? "Agora promova" : conv.goal === "hold" ? "Agora segure" : conv.goal === "mate" ? "Agora dê o mate" : "Agora converta"}
+                    </h3>
+                    <p>{convertGoalText(conv.goal)}</p>
+                    <p className="xs faint" style={{ marginTop: 4 }}>
+                      {status === "convert-wait" ? "Stockfish pensando…" : `Seu lance ${conv.step + 1} de no máximo ${conv.max}`}
+                      {conv.before && status !== "convert-wait" && ` · avaliação para você ${formatScore({ cp: solverCp(conv.before.score, solverColor) })}`}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {status === "convert-wrong" && conv?.msg && (
+                <div className="feedback bad">
+                  <XCircle size={20} color="var(--danger)" />
+                  <p>{conv.msg}</p>
+                </div>
+              )}
+              {status === "converted" && conv && (
+                <div className={`feedback ${conv.outcome === "reached" ? "ok" : "info"}`}>
+                  <CheckCircle2 size={22} color="var(--accent)" />
+                  <div>
+                    <h3>{conv.outcome === "reached" ? (conv.goal === "promote" ? "Promovido! Puzzle completo." : conv.goal === "hold" ? "Empate garantido!" : conv.goal === "mate" ? "Xeque-mate! Puzzle completo." : "Vantagem decisiva! Puzzle completo.") : conv.outcome === "skipped" ? "Puzzle encerrado" : "Puzzle completo"}</h3>
+                    <p>
+                      {conv.outcome === "reached"
+                        ? "Você levou a ideia até o fim."
+                        : conv.outcome === "kept"
+                          ? conv.msg ?? "Você manteve a vantagem até o fim da sequência."
+                          : conv.msg ?? "A parte principal conta como resolvida."}
+                    </p>
+                    <p className="xs faint">{mistakes === 0 && hints === 0 ? "A parte principal foi resolvida de primeira." : "A parte principal conta como resolvida, mas não de primeira."}</p>
+                  </div>
+                </div>
+              )}
               {status === "solved" && (
                 <div className="feedback ok">
                   <CheckCircle2 size={22} color="var(--accent)" />
@@ -511,7 +587,19 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
                 </div>
               )}
               <div className="row wrap">
-                {!done ? (
+                {converting ? (
+                  <>
+                    <button className="btn" onClick={convertHint} disabled={status !== "convert-turn"}>
+                      <Lightbulb size={16} /> Dica
+                    </button>
+                    <button className="btn" onClick={convertPlayEngine} disabled={status !== "convert-turn"}>
+                      Jogar o lance do motor
+                    </button>
+                    <button className="btn ghost" onClick={() => finishConversion("skipped")}>
+                      Encerrar aqui
+                    </button>
+                  </>
+                ) : !done ? (
                   <>
                     <button className="btn" onClick={hint} disabled={status !== "your-turn"}>
                       <Lightbulb size={16} /> Dica
@@ -533,7 +621,21 @@ function Solver({ puzzle, title, onNext, dailyProgress }: { puzzle: Puzzle; titl
                     <button className="btn" onClick={retry}>
                       <RotateCcw size={16} /> Refazer
                     </button>
-                    <button className="btn ghost" onClick={() => navigate(`/analisar?fen=${encodeURIComponent(startFen)}`)}>
+                    <button
+                      className="btn ghost"
+                      onClick={() => {
+                        // open the line in the analysis board at the position where the solver moves, seen from the solver's side
+                        let sans: string[] = [];
+                        try {
+                          const c = new Chess(startFen);
+                          sans = played.current.map((u) => c.move(parseUci(u)).san);
+                        } catch {
+                          /* keep what was valid */
+                        }
+                        const pgn = buildPgn(startFen, sans, { Event: `Puzzle ${puzzle.id}` });
+                        navigate(`/analisar?pgn=${encodeURIComponent(pgn)}&ply=${puzzle.solverFirst ? -1 : 0}&o=${solverColor}`);
+                      }}
+                    >
                       Analisar posição
                     </button>
                   </>

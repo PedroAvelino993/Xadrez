@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, ClipboardCopy, Eraser, Microscope, RotateCcw, Star, StarOff, Swords, Trash2, CheckCircle2, AlertTriangle, Hand, FlipVertical } from "lucide-react";
 import Board from "../components/Board";
 import ExerciseBoard from "../components/ExerciseBoard";
+import { decideGoalForObjective } from "../puzzles/convert";
 import { copyText, PieceIcon, Seg, toast } from "../components/ui";
 import { FILES, START_FEN, parseUci, validateFen } from "../chess/rules";
 import type { Color, PieceType } from "../types";
@@ -162,6 +163,7 @@ function PositionDetail({ p }: { p: LibraryPosition }) {
             hint="Procure primeiro os lances forçantes: xeques, capturas e ameaças. Pense no que o adversário quer fazer."
             success={p.explanation.join(" ")}
             onSolved={() => setSolved(true)}
+            convert={(fenAfter, view) => decideGoalForObjective(p.objective, p.category === "finais" || p.category === "famosa", fenAfter, p.fen.split(" ")[1] as Color, view.score)}
           />
         </div>
       ) : (

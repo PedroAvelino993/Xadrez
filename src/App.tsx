@@ -97,7 +97,7 @@ export default function App() {
       page = <PuzzlesPage mode={sub[0]} />;
       break;
     case "analisar":
-      page = <AnalysisPage fen={query.get("fen") ?? undefined} pgn={query.get("pgn") ?? undefined} />;
+      page = <AnalysisPage fen={query.get("fen") ?? undefined} pgn={query.get("pgn") ?? undefined} ply={query.get("ply") ?? undefined} side={query.get("o") ?? undefined} />;
       break;
     case "revisao":
       page = <ReviewPage gameId={sub[0]} />;

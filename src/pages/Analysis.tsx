@@ -21,7 +21,7 @@ import { classify } from "../analysis/classify";
 import { explainMove } from "../analysis/explain";
 import { setImportedGame } from "./Review";
 
-export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string }) {
+export default function AnalysisPage({ fen, pgn, ply, side }: { fen?: string; pgn?: string; ply?: string; side?: string }) {
   const settings = useSettings();
   const initial = useMemo(() => {
     if (pgn) {
@@ -38,8 +38,12 @@ export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string 
 
   const [startFen, setStartFen] = useState(initial.startFen);
   const [records, setRecords] = useState<MoveRecord[]>(initial.records);
-  const [view, setView] = useState(initial.records.length - 1);
-  const [orientation, setOrientation] = useState<Color>("w");
+  const startView = (n: number) => {
+    const k = ply !== undefined ? Math.round(+ply) : NaN;
+    return Number.isFinite(k) ? Math.max(-1, Math.min(n - 1, k)) : n - 1;
+  };
+  const [view, setView] = useState(startView(initial.records.length));
+  const [orientation, setOrientation] = useState<Color>(side === "b" ? "b" : side === "w" ? "w" : initial.records.length ? "w" : (initial.startFen.split(" ")[1] as Color) === "b" ? "b" : "w");
   const [engineOn, setEngineOn] = useState(true);
   const [showArrow, setShowArrow] = useState(true);
   const [importing, setImporting] = useState(false);
@@ -47,8 +51,10 @@ export default function AnalysisPage({ fen, pgn }: { fen?: string; pgn?: string 
   useEffect(() => {
     setStartFen(initial.startFen);
     setRecords(initial.records);
-    setView(initial.records.length - 1);
-  }, [initial]);
+    setView(startView(initial.records.length));
+    if (side === "w" || side === "b") setOrientation(side);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initial, ply, side]);
 
   const current = view < 0 ? startFen : records[view].fenAfter;
   const live = useLiveAnalysis(current, engineOn, settings.analysisDepth, settings.analysisLines);
