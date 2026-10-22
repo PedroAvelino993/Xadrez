@@ -99,6 +99,15 @@ function listTargets(t: { type: PieceType; square: string }[]): string {
 }
 
 export function explainMove(i: ExplainInput): string[] {
+  try {
+    return explainUnsafe(i);
+  } catch {
+    // never break the page because of an explanation: fall back to the facts we always have
+    return [`A avaliação passou de ${formatScore(i.before)} para ${formatScore(i.after)}.`];
+  }
+}
+
+function explainUnsafe(i: ExplainInput): string[] {
   const out: string[] = [];
   const opp: Color = i.mover === "w" ? "b" : "w";
   const good = i.cls === "best" || i.cls === "excellent" || i.cls === "good" || i.cls === "book" || i.cls === "forced";

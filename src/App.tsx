@@ -4,6 +4,7 @@ import { useRoute } from "./hooks/useRoute";
 import { addStudyTime, useAppState, useSettings } from "./storage/store";
 import { Toasts, UserAvatar } from "./components/ui";
 import HomePage from "./pages/Home";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const PlayPage = lazy(() => import("./pages/Play"));
 const LearnPage = lazy(() => import("./pages/Learn"));
@@ -174,7 +175,7 @@ export default function App() {
             </div>
           }
         >
-          {page}
+          <ErrorBoundary resetKey={path}>{page}</ErrorBoundary>
         </Suspense>
       </main>
       <nav className="tabbar" aria-label="Navegação">

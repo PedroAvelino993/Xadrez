@@ -197,6 +197,7 @@ export function ClassIcon({ kind, size = 18 }: { kind: Classification; size?: nu
 /** SAN with a figurine image for the piece letter. */
 export function San({ san }: { san: string; color?: "w" | "b" }) {
   const theme = useSettings().theme;
+  if (!san) return null;
   const m = san.match(/^([KQRBN])(.*)$/);
   if (!m) return <span className="san">{san}</span>;
   // figurines use the colour that contrasts with the page, like printed notation

@@ -29,8 +29,9 @@ interface Props {
 }
 
 export default function MoveVerdict({ san, color, cls, before, after, explanation, fenBefore, bestPv, playedUci, onShowLine }: Props) {
-  const showBest = bestPv.length > 0 && bestPv[0] !== playedUci && cls !== "best" && cls !== "book" && cls !== "forced";
-  const bestSans = showBest ? sanLineFromUci(fenBefore, bestPv.slice(0, 8)) : [];
+  const bestSans = bestPv.length ? sanLineFromUci(fenBefore, bestPv.slice(0, 8)) : [];
+  // only show an alternative that is legal in this position
+  const showBest = bestSans.length > 0 && bestPv[0] !== playedUci && cls !== "best" && cls !== "book" && cls !== "forced";
   return (
     <div className={`verdict v-${cls}`}>
       <div className="verdict-head">

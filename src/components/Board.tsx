@@ -50,6 +50,7 @@ interface PieceState {
 }
 
 let nextId = 1;
+const PROMO_GUARD_MS = 350;
 
 function placement(fen: string): Map<string, { color: Color; type: PieceType }> {
   const m = new Map<string, { color: Color; type: PieceType }>();
@@ -142,7 +143,10 @@ export default function Board({
   const [selected, setSelected] = useState<string | null>(null);
   const [drag, setDrag] = useState<{ id: number; from: string; x: number; y: number; over: string | null } | null>(null);
   const [noAnimId, setNoAnimId] = useState<number | null>(null);
-  const [promo, setPromo] = useState<{ from: string; to: string; color: Color } | null>(null);
+  const [promo, setPromo] = useState<{ from: string; to: string; color: Color; openedAt: number } | null>(null);
+  const [promoReady, setPromoReady] = useState(false);
+  // a promotion choice only counts if the touch started on that button after the menu opened
+  const promoPress = useRef<string | null>(null);
   const [shakeId, setShakeId] = useState<number | null>(null);
   const [userArrows, setUserArrows] = useState<Arrow[]>([]);
   const [userCircles, setUserCircles] = useState<string[]>([]);
@@ -190,6 +194,12 @@ export default function Board({
   }, [pieces]);
 
   useEffect(() => {
+    if (!promo) return;
+    const t = setTimeout(() => setPromoReady(true), PROMO_GUARD_MS);
+    return () => clearTimeout(t);
+  }, [promo]);
+
+  useEffect(() => {
     if (noAnimId === null) return;
     const t = setTimeout(() => setNoAnimId(null), 60);
     return () => clearTimeout(t);
@@ -234,7 +244,9 @@ export default function Board({
     if (viaDrag && mover) setNoAnimId(mover.id);
     if (options.some((o) => o.promotion)) {
       if (settings.autoQueen) return commit({ from, to, promotion: "q" }, from);
-      setPromo({ from, to, color: turn });
+      promoPress.current = null;
+      setPromoReady(false);
+      setPromo({ from, to, color: turn, openedAt: performance.now() });
       return true;
     }
     return commit({ from, to }, from);
@@ -426,6 +438,15 @@ export default function Board({
 
   const anim = settings.animation === "off" ? 0 : settings.animation === "fast" ? 110 : 200;
 
+  /** Ignore the finger that is still on the screen from the move itself. */
+  const promoAccepts = (e: React.MouseEvent, key: string) => {
+    if (e.detail === 0) return true; // keyboard activation
+    if (!promo || performance.now() - promo.openedAt < PROMO_GUARD_MS) return false;
+    const ok = promoPress.current === key;
+    promoPress.current = null;
+    return ok;
+  };
+
   return (
     <div
       ref={rootRef}
@@ -480,8 +501,12 @@ export default function Board({
         </svg>
       )}
       {promo && (
-        <div className="promo-layer" onPointerDown={(e) => e.stopPropagation()}>
-          <div className="promo-dim" onClick={() => setPromo(null)} />
+        <div className={`promo-layer ${promoReady ? "ready" : ""}`} onPointerDown={(e) => e.stopPropagation()}>
+          <div
+            className="promo-dim"
+            onPointerDown={() => (promoPress.current = "dim")}
+            onClick={(e) => promoAccepts(e, "dim") && setPromo(null)}
+          />
           <div
             className="promo-col"
             style={{
@@ -499,7 +524,9 @@ export default function Board({
                 className="promo-btn"
                 aria-label={PIECE_NAME[t]}
                 autoFocus={t === "q"}
-                onClick={() => {
+                onPointerDown={() => (promoPress.current = t)}
+                onClick={(e) => {
+                  if (!promoAccepts(e, t)) return;
                   const pr = promo;
                   setPromo(null);
                   commit({ from: pr.from, to: pr.to, promotion: t }, pr.from);
@@ -507,7 +534,7 @@ export default function Board({
                 style={{ backgroundImage: `url(${pieceUrl(settings.pieceSet, promo.color, t)})` }}
               />
             ))}
-            <button className="promo-cancel" onClick={() => setPromo(null)} aria-label="Cancelar promoção">
+            <button className="promo-cancel" onPointerDown={() => (promoPress.current = "cancel")} onClick={(e) => promoAccepts(e, "cancel") && setPromo(null)} aria-label="Cancelar promoção">
               ×
             </button>
           </div>

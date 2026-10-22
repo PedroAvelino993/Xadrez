@@ -4,6 +4,8 @@ import { getAnalysisEngine, EngineCancelled } from "../engine/stockfish";
 import { terminalEval } from "../analysis/review";
 
 export interface LiveAnalysis {
+  /** position the result belongs to */
+  fen?: string | null;
   result: EngineResult | null;
   running: boolean;
   error: string | null;
@@ -20,11 +22,12 @@ export function cachedEval(fen: string, minDepth: number): EngineResult | undefi
 
 /** Streams Stockfish analysis of `fen`; cancels the previous search on change. */
 export function useLiveAnalysis(fen: string | null, enabled: boolean, depth: number, multipv: number): LiveAnalysis {
-  const [state, setState] = useState<LiveAnalysis>({ result: null, running: false, error: null, terminal: null });
+  const [raw, setRaw] = useState<LiveAnalysis>({ fen: null, result: null, running: false, error: null, terminal: null });
+  const setState = (st: LiveAnalysis) => setRaw({ ...st, fen });
   const last = useRef(0);
   useEffect(() => {
     if (!enabled || !fen) {
-      setState((s) => ({ ...s, running: false }));
+      setRaw((s) => ({ ...s, running: false }));
       return;
     }
     const t = terminalEval(fen);
@@ -56,13 +59,17 @@ export function useLiveAnalysis(fen: string | null, enabled: boolean, depth: num
         setState({ result: null, running: false, error: String((e as Error).message ?? e), terminal: null });
       });
     return () => h.cancel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fen, enabled, depth, multipv]);
-  return state;
+  // never hand out a result computed for a different position
+  if (raw.fen !== fen) return { fen, result: null, running: enabled && !!fen, error: null, terminal: null };
+  return raw;
 }
 
 /** Evaluates a single position once (used for "before" positions); result is cached. */
 export function useEvalOnce(fen: string | null, depth: number, enabled: boolean): EngineResult | null {
-  const [res, setRes] = useState<EngineResult | null>(null);
+  const [state, setState] = useState<{ fen: string | null; res: EngineResult | null }>({ fen: null, res: null });
+  const setRes = (res: EngineResult | null) => setState({ fen, res });
   useEffect(() => {
     if (!fen || !enabled) {
       setRes(null);
@@ -87,6 +94,7 @@ export function useEvalOnce(fen: string | null, depth: number, enabled: boolean)
       })
       .catch(() => {});
     return () => h.cancel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fen, depth, enabled]);
-  return res;
+  return state.fen === fen ? state.res : null;
 }

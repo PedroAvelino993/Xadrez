@@ -109,4 +109,18 @@ describe("explicações verificáveis", () => {
     const m = after.move("Ra8#");
     expect(explainMove({ fenBefore, fenAfter: m.after, played: "a1a8", san: "Ra8#", mover: "w", before: { mate: 1 }, after: { cp: 100000 }, bestPv: ["a1a8"], replyPv: [], cls: "best", ply: 30 })[0]).toContain("Xeque-mate");
   });
+  it("nunca quebra mesmo com uma linha do motor de outra posição", () => {
+    const fenBefore = "4k3/8/8/8/8/8/4P3/4K3 w - - 0 1";
+    const c = new Chess(fenBefore);
+    const m = c.move("Kd1");
+    const out = explainMove({ fenBefore, fenAfter: m.after, played: "e1d1", san: "Kd1", mover: "w", before: { cp: 300 }, after: { cp: 0 }, bestPv: ["a7a8q", "h8h1"], replyPv: ["b2b1"], cls: "blunder", ply: 40 });
+    expect(out.length).toBeGreaterThan(0);
+  });
+});
+
+describe("componentes com dados de outra posição", () => {
+  it("a linha do motor de outra posição não vira lance", async () => {
+    const { sanLineFromUci } = await import("../chess/rules");
+    expect(sanLineFromUci("4k3/8/8/8/8/8/4P3/4K3 w - - 0 1", ["a7a8q"])).toEqual([]);
+  });
 });

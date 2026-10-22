@@ -159,3 +159,8 @@
 }
 .board .promo-btn:hover, .board .promo-btn:focus-visible { background-color: #dfe9d8; background-size: 100%; outline: none; }
 .board .promo-cancel { border: 0; background: #e3e3e0; color: #555; font-size: 1.2rem; padding: 2px 0; cursor: pointer; }
+/* the promotion menu fades in and only lights up when it accepts taps */
+.board .promo-layer .promo-btn { opacity: 0.55; transform: scale(0.92); transition: opacity 180ms, transform 180ms var(--ease), background-color 120ms, background-size 120ms; }
+.board .promo-layer.ready .promo-btn { opacity: 1; transform: none; }
+.board .promo-dim { animation: fade-in 260ms; }
+.board .promo-col { animation: promo-in 260ms var(--ease); }
